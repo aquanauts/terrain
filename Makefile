@@ -4,7 +4,6 @@ VENV = .venv
 PYTHON := $(VENV)/bin/python3
 PIP := $(VENV)/bin/pip
 LOG_LEVEL := INFO
-PYTEST_OPTS := "-n" # No beep
 PROJECT_NAME=$(shell basename $(PWD))
 
 help:
@@ -20,7 +19,7 @@ $(VENV): $(SYS_PYTHON)
 	@$(PIP) install -r requirements.txt
 	@cp requirements.txt .deps
 
-.PHONY: run
+.PHONY: run test
 
 clean: ## Remove pycache files
 	@find . -name __pycache__ | grep -v venv | xargs rm -rf
@@ -37,12 +36,11 @@ run: .deps ## Start the service in dev mode
 test-dbg: .deps ## Run tests the python debugger
 	@$(PYTHON) -m pytest $(PYTEST_OPTS) --pdb
 
-watch: .deps ## Run tests continuously
-	@PYTHONPATH=. $(PYTHON) -m pytest_watch $(PYTEST_OPTS)
+watch: .deps ## Run tests and linter continuously
+	@PYTHONPATH=. $(PYTHON) -m pytest_watch -n --onpass 'make lint'
 
-check: test ## Runs tests, linting, and pep8 formatting
-	@$(VENV)/bin/pylint $(PROJECT_NAME)
-	@$(VENV)/bin/autopep8 --in-place --max-line-length 120 --aggressive --aggressive --recursive $(PROJECT_NAME)
+lint: .deps ## Runs tests, linting, and pep8 formatting
+	@$(VENV)/bin/pylint $(PROJECT_NAME) test
 
 repl: .deps
 	@$(VENV)/bin/ipython

@@ -37,11 +37,11 @@ test-dbg: .deps ## Run tests the python debugger
 	@$(PYTHON) -m pytest $(PYTEST_OPTS) --pdb
 
 watch: .deps ## Run tests and linter continuously
-	@PYTHONPATH=. $(PYTHON) -m pytest_watch -n --onpass 'make lint'
+	@PYTHONPATH=. $(PYTHON) -m pytest_watch -n
 
 lint: .deps ## Runs tests, linting, and pep8 formatting
 	@$(VENV)/bin/pylint $(PROJECT_NAME) test
 
 repl: .deps
-	@$(VENV)/bin/ipython
+	@$(VENV)/bin/ipython -i main.py
 

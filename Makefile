@@ -17,7 +17,13 @@ endif
 help:
 	grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-$(CONDA):
+$(PROJECT_NAME):
+	# Initialize the project
+	git mv pythonista $(PROJECT_NAME)
+	sed -i "s/pythonista/skyblock/g" test/main_test.py
+	git add test/main_test.py
+
+$(CONDA): | $(PROJECT_NAME)
 	echo "Installing Miniconda3 to $(MINICONDA)"
 	wget https://repo.anaconda.com/miniconda/Miniconda3-$(CONDA_VERSION)-Linux-x86_64.sh -O $(CURDIR)/miniconda.sh
 	bash $(CURDIR)/miniconda.sh -u -b -p "$(CURDIR)/.miniconda3"

@@ -12,6 +12,7 @@ git init
 git pull git@github.com:benrady/pythonista.git
 make test
 git commit -am "Initial version"
+
 ```
 
 This will initialize the directory and change all the project references inside it. 

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+PROJECT_NAME=$(basename $(dirname $(readlink -f "$0")))
+
 exec 2>&1
 
-exec .venv/bin/python3 main.py
+exec .venv/bin/python3 -m "$PROJECT_NAME" "$@"

@@ -2,8 +2,4 @@
 .venv
 .pytest_cache
 __pycache__
-supervise
-log/current
-log/lock
-log/python.log
-tags
+.miniconda3

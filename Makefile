@@ -1,48 +1,60 @@
-SHELL := $(shell which bash) # Use bash instead of bin/sh as shell
-SYS_PYTHON := $(shell which python3 || echo ".python_is_missing")
-VENV = .venv
-PYTHON := $(VENV)/bin/python3
-PIP := $(VENV)/bin/pip
-LOG_LEVEL := INFO
-PROJECT_NAME := $(shell basename $(PWD))
-DEPS := $(VENV)/.deps 
+SHELL := $(shell which bash)
+MINICONDA := $(CURDIR)/.miniconda3
+CONDA := $(MINICONDA)/bin/conda
+CONDA_VERSION := 4.7.10
+VENV := $(PWD)/.venv
+DEPS := $(VENV)/.deps
+PYTHON := $(VENV)/bin/python
+PYTHON_CMD := PYTHONPATH=$(CURDIR) $(PYTHON)
+PROJECT_NAME=$(shell basename $(CURDIR))
+PYLINT_CMD := $(PYTHON_CMD) -m pylint $(PROJECT_NAME) test
 
+ifndef VERBOSE
+.SILENT:
+endif
+
+.PHONY: help
 help:
-	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-$(SYS_PYTHON): 
-	@$(error "You need Python 3. I can't find it on the PATH.")
+$(CONDA):
+	echo "Installing Miniconda3 to $(MINICONDA)"
+	wget https://repo.anaconda.com/miniconda/Miniconda3-$(CONDA_VERSION)-Linux-x86_64.sh -O $(CURDIR)/miniconda.sh
+	bash $(CURDIR)/miniconda.sh -u -b -p "$(CURDIR)/.miniconda3"
+	rm $(CURDIR)/miniconda.sh
 
-$(VENV): $(SYS_PYTHON)
-	@$(SYS_PYTHON) -m venv $(VENV)
+environment.yml: | $(CONDA)
 
-$(DEPS): requirements.txt | $(VENV)
-	@$(PIP) install -r requirements.txt
-	@cp requirements.txt $(DEPS)
+$(DEPS): environment.yml
+	$(CONDA) env create -f environment.yml -p $(VENV)
+	cp environment.yml $(DEPS)
 
-.PHONY: run test
+.PHONY: clean
+clean:
+	rm -rf $(VENV)
+	rm -rf $(MINICONDA)
+	find . -name __pycache__ | grep -v .venv | grep -v .miniconda3 | xargs rm -rf
 
-clean: ## Remove pycache files
-	@find . -name __pycache__ | grep -v venv | xargs rm -rf
+.PHONY: test
+test: $(DEPS)  ## Run tests
+	$(PYTHON_CMD) -m pytest -v
+	$(PYLINT_CMD)
 
-git-deploy: $(DEPS) # Called by the git-deploy plugin during a push
-	@ln -s -f -T ${PWD} ~/service/$(PROJECT_NAME)
+.PHONY: watch
+watch: $(DEPS) ## Run tests and linters continuously
+	$(PYTHON_CMD) -m pytest_watch --runner $(VENV)/bin/pytest --ignore .venv -n --onpass '$(PYLINT_CMD)'
 
-test: $(DEPS) # Run all unit and integration tests once
-	@$(PYTHON) -m pytest
+.PHONY: repl
+repl: ## Run an iPython REPL
+	$(VENV)/bin/ipython
 
-run: $(DEPS) ## Start the service in dev mode
-	@LOG_LEVEL=DEBUG $(PYTHON) main.py
+.PHONY: solve
+solve: | $(CONDA) ## Re-solve locked project dependencies from deps.yml
+	rm -rf $(VENV)
+	$(CONDA) env update --prune --quiet -p $(VENV) -f deps.yml
+	$(CONDA) env export -p $(VENV) | grep -v ^prefix: > environment.yml
+	cp environment.yml $(DEPS)
 
-test-dbg: $(DEPS) ## Run tests the python debugger
-	@$(PYTHON) -m pytest $(PYTEST_OPTS) --pdb
-
-watch: $(DEPS) ## Run tests and linter continuously
-	@PYTHONPATH=. $(PYTHON) -m pytest_watch -n
-
-lint: $(DEPS) ## Runs tests, linting, and pep8 formatting
-	@$(VENV)/bin/pylint $(PROJECT_NAME) test
-
-repl: $(DEPS)
-	@$(VENV)/bin/ipython -i main.py
-
+.PHONY: run
+run: $(DEPS) ## Run the main function
+	./run

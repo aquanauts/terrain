@@ -1,13 +1,13 @@
 
 # Pythonista
 
-A Python asyncio service skeleton project
+A Python skeleton project
 
 ## Usage
 
-   * Write tests with [aysnctest](https://asynctest.readthedocs.io/en/latest/)
+   * Write tests with [pytest](https://docs.pytest.org/en/latest/getting-started.html)
    * Run tests with [pytest-watch](https://github.com/joeyespo/pytest-watch)
-   * Deploy using [git-deploy](http://github.com/benrady/git-deploy)
+   * Manage dependencies with [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
    * Run `make` for help on other tasks
 
 

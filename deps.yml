@@ -1,0 +1,10 @@
+---
+name: conda-venv
+
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - ipython
+  - pylint
+  - pytest-watch

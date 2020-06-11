@@ -5,7 +5,8 @@ async def fail_route(_):
 
 def create_app():
     app = web.Application()
-    app.add_routes([web.get('/fail', fail_route)])
+    app.add_routes([web.get('/fail', fail_route),
+                    web.static('/', "web")])
     return app
 
 def main():

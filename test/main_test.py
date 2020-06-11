@@ -1,6 +1,6 @@
 import io
 
-from pythonista import main
+from terrain import main
 
 def test_main_wants_arguments():
     output = io.StringIO()

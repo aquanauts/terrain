@@ -1,6 +1,14 @@
+from aiohttp import web
 
-def main(args, stdout):
-    if len(args) == 1:
-        stdout.write("I came here for an argument!\n")
-    else:
-        stdout.write(f"Saw args {args}\n")
+async def fail_route(_):
+    raise Exception("Raised test exception")
+
+def create_app():
+    app = web.Application()
+    app.add_routes([web.get('/fail', fail_route)])
+    return app
+
+def main():
+    # This code is not tested
+    app = create_app()
+    web.run_app(app)

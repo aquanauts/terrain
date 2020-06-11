@@ -1,16 +1,15 @@
-import io
+import pytest
 
-from terrain import main
+from terrain import create_app
 
-def test_main_wants_arguments():
-    output = io.StringIO()
-    args = ["main.py"]
-    main(args, output)
-    assert output.getvalue() == "I came here for an argument!\n"
+@pytest.fixture(name='webapp')
+def webapp_fixture():
+    return create_app()
 
 
-def test_main_prints_arguments():
-    output = io.StringIO()
-    args = ["main.py", "foo", "bar"]
-    main(args, output)
-    assert output.getvalue() == f"Saw args {args}\n"
+async def test_webapp_has_a_fail_route_for_testing_errors(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    resp = await client.get('/fail')
+    assert resp.status == 500
+    text = await resp.text()
+    assert "500 Internal Server Error" in text

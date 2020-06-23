@@ -3,3 +3,4 @@
 .pytest_cache
 __pycache__
 .miniconda3
+exceptions.txt

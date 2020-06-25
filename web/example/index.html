@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Terrain Example Application</title>
+    <script type="text/javascript" src='/vendor/jquery-2.2.4/jquery-2.2.4.min.js'></script>
+    <script type="text/javascript" src='/t.js'></script>
+    <script type="text/javascript">
+      function undefinedVariableError() {
+          foo.bar.baz();
+      }
+      //TODO add more errors to check
+
+      function rangeError() {
+          var random_array = [];
+          console.log(random_array[2]);
+      }
+
+      function referenceError() {
+          var random = 0;
+          if (random = 1) {
+              console.log("Equality!");
+          }
+      }
+
+      function typeError() {
+          null.f();
+      }
+
+      function uriError() {
+          decodeURIComponent('%');
+      }
+          
+      function syntaxError() {
+        eval("for (let i = 0; i <=0, ++i) {}");
+      }
+
+      function evalError() {
+          throw new EvalError('Created eval error', 'non_existent.js', 1);
+      }
+    </script>
+  </head>
+  <body>
+    <h2>Click the buttons below to trigger errors</h2>
+    <p>Terrain will automatically listen for errors in your application, and log them to the Terrain server.</p>
+    <button onclick='undefinedVariableError()'>Undefined Variable Error</button>
+  </body>
+</html>

@@ -13,10 +13,19 @@ def webapp_fixture(exception_log):
     return create_app(exception_log)
 
 
+async def test_webapp_serves_log_content_and_returns_http_200(aiohttp_client, webapp, exception_log):
+    client = await aiohttp_client(webapp)
+    exception_data = json.dumps({"message" : "message"})
+    exception_log.read.return_value = exception_data
+    resp = await client.get('/show_errors')
+    assert resp.status == 200
+    text = await resp.text()
+    assert text == exception_data
+
 async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, exception_log):
     client = await aiohttp_client(webapp)
     exception_data = {"message": "message"}
-    await client.post('/error', data=json.dumps(exception_data))
+    await client.post('/receive_error', data=json.dumps(exception_data))
     exception_log.write.assert_called_with(json.dumps(exception_data))
 
 
@@ -29,7 +38,7 @@ async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, we
         "colNo": 80,
         "error": {}
     }
-    resp = await client.post('/error', data=json.dumps(exception_data))
+    resp = await client.post('/receive_error', data=json.dumps(exception_data))
     assert resp.status == 200
     text = await resp.text()
     assert text == "Attempted to append error information to the log."

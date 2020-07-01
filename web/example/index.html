@@ -6,18 +6,23 @@
     <script type="text/javascript" src='/t.js'></script>
     <script type="text/javascript">
       function undefinedVariableError() {
-          foo.bar.baz();
+        foo.bar.baz();
+        recordError(error) //TODO deal with inconsistencies in format of errorEvent
       }
-      //TODO add more errors to check
-
+      
+      //TODO add more errors to check - subtypes within these broader types
+      //TODO add try catch blocks for all
       function rangeError() {
-          var random_array = [];
-          console.log(random_array[2]);
+        
+          var randomArray = [];
+          var anElement = randomArry[2];
+          recordError(error);
       }
+      
 
       function referenceError() {
           var random = 0;
-          if (random = 1) {
+          if (random == 1) {
               console.log("Equality!");
           }
       }
@@ -43,5 +48,11 @@
     <h2>Click the buttons below to trigger errors</h2>
     <p>Terrain will automatically listen for errors in your application, and log them to the Terrain server.</p>
     <button onclick='undefinedVariableError()'>Undefined Variable Error</button>
+    <button onclick='uriError()'>URI Decoding Error</button>
+    <button onclick='rangeError()'>Range Error</button>
+    <button onclick='referenceError()'>Reference Error</button>
+    <button onclick='typeError()'>Type Error</button>
+    <button onclick='syntaxError()'>Syntax Error</button>
+    <button onclick='evalError()'>Eval Error</button>
   </body>
 </html>

@@ -1,19 +1,91 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>Terrain</title>
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-4.3.1/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/terrain.css" rel="stylesheet">
+    <script type="text/javascript" src='/js/events.js'></script>
+    <script type="text/javascript" src='/js/templates.js'></script>
+    <script type="text/javascript" src='/js/router.js'></script>
     <script type="text/javascript" src='/vendor/jquery-2.2.4/jquery-2.2.4.min.js'></script>
     <script type="text/javascript" src='/t.js'></script>
     <!-- Add our own embedded library here! See https://github.com/aquanauts/terrain/issues/2 -->
   </head>
   <body>
-    <p>  Hello World! <p>
-    <a href="/log.html" target="_blank">Click here to view the error log.</a>
-  </body>
+    <div class="markup">
 
-  <script type="text/javascript">
-    if (window.location.port === "8000") {
-      $('body').append($("<script>").attr('type','text/javascript').attr('src', 'http://' + window.location.host + '/vendor/livereload-2.1.0/livereload.js?ext=Chrome&extver=2.1.0'))
-    }
-  </script>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <span class='banner'>
+          <a href="#home" class='navbar-brand'>
+            <!-- <img class='logo' src="/img/icon.svg" alt="Aquatic"> -->
+            <span class="title">
+              Terrain
+            </span>
+          </a>
+        </span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#home">Home</a>
+            </li>
+          </ul>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Username" aria-label="Username">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+          </form>
+        </div>
+      </nav>
+
+      <div class="view-container container-fluid">
+      </div>
+
+      <div class="templates">
+        <div class="homeView mt-5">
+          <p>Hello World!</p>
+          <a href="#errorLog" target="_blank">Click here to view the error log.</a>
+        </div>
+
+        <div class="logView">
+          <div class="container">
+            <h1>Error Log Page</h1>
+            <p>Hello World!</p>
+            <!-- Add searching, sorting, filtering capabilities -->
+
+            <table class="table" id="errorTable">
+            </table>
+          </div>
+        </div>
+
+        <table class='errorLogTable'>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>errorEventMessage</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script type="module">
+      import {routes} from './js/app.js';
+      window.appRoutes = routes();
+      $(window).ready(() => { routerOnReady(window.appRoutes); });
+    </script>
+    <script type="text/javascript">
+      if (window.location.port === "8000") {
+        $('body').append($("<script>").attr('type','text/javascript').attr('src', 'http://' + window.location.host + '/vendor/livereload-2.1.0/livereload.js?ext=Chrome&extver=2.1.0'))
+      }
+    </script>
+
+  </body>
 </html>
+
+<!DOCTYPE HTML>

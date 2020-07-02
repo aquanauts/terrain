@@ -1,3 +1,4 @@
+// Try to avoid jquery here!
 window.addEventListener('load', function() {  
     console.log("Terrain is active!");
     currentURL = window.location["href"];

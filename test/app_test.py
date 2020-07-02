@@ -2,7 +2,7 @@ from unittest import mock
 import json
 import pytest
 
-from terrain import create_app
+from terrain.app import create_app
 
 @pytest.fixture(name='exception_log')
 def exception_log_fixture():
@@ -21,6 +21,13 @@ async def test_webapp_serves_log_content_and_returns_http_200(aiohttp_client, we
     assert resp.status == 200
     text = await resp.text()
     assert text == exception_data
+
+async def test_webapp_serves_index_html_at_root_path(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    resp = await client.get('/')
+    assert resp.status == 200
+    html = await resp.text()
+    assert "Terrain" in html
 
 async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, exception_log):
     client = await aiohttp_client(webapp)

@@ -10,4 +10,10 @@
     <p>  Hello World! <p>
     <a href="/log.html" target="_blank">Click here to view the error log.</a>
   </body>
+
+  <script type="text/javascript">
+    if (window.location.port === "8000") {
+      $('body').append($("<script>").attr('type','text/javascript').attr('src', 'http://' + window.location.host + '/vendor/livereload-2.1.0/livereload.js?ext=Chrome&extver=2.1.0'))
+    }
+  </script>
 </html>

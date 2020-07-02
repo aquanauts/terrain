@@ -11,3 +11,6 @@ dependencies:
   - pytest-watch
   - aiohttp
   - pytest-aiohttp
+  - pip
+  - pip:
+      - aiohttp-devtools

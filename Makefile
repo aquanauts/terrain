@@ -64,3 +64,7 @@ solve: | $(CONDA) ## Re-solve locked project dependencies from deps.yml
 .PHONY: run
 run: $(DEPS) ## Run the main function
 	./run
+
+.PHONY: run-dev
+run-dev: $(DEPS) ## Run in development mode
+	$(VENV)/bin/adev runserver --static web --static-url / --livereload --aux-port 35729 $(PROJECT_NAME)

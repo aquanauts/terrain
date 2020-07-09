@@ -15,32 +15,36 @@
       function rangeError() {
         
           var randomArray = [];
-          var anElement = randomArry[2];
+          var anElement = randomArray[2];
           recordError(error);
       }
       
 
       function referenceError() {
-          var random = 0;
           if (random == 1) {
               console.log("Equality!");
           }
+          recordError(error);
       }
 
       function typeError() {
           null.f();
+          recordError(error);
       }
 
       function uriError() {
           decodeURIComponent('%');
+          recordError(error);
       }
           
       function syntaxError() {
-        eval("for (let i = 0; i <=0, ++i) {}");
+          eval("for (let i = 0; i <=0, ++i) {}");
+          recordError(error);
       }
 
       function evalError() {
           throw new EvalError('Created eval error', 'non_existent.js', 1);
+          recordError(error);
       }
     </script>
   </head>

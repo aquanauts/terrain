@@ -29,12 +29,26 @@ async def test_webapp_serves_index_html_at_root_path(aiohttp_client, webapp):
     html = await resp.text()
     assert "Terrain" in html
 
+async def test_adds_cache_control_header(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    resp = await client.get('/')
+    assert "no-cache" in resp.headers['cache-control']
+
 async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, exception_log):
     client = await aiohttp_client(webapp)
     exception_data = {"message": "message"}
     await client.post('/receive_error', data=json.dumps(exception_data))
     exception_log.write.assert_called_with(json.dumps(exception_data))
 
+async def test_webapp_can_read_an_error_by_its_row_number(aiohttp_client, webapp, exception_log):
+    expected_info = {"exceptionInfo": "stuff goes here"}
+    exception_log.read_entry.return_value = expected_info
+    client = await aiohttp_client(webapp)
+    resp = await client.get('/get_error?id=42')
+    assert resp.status == 200
+    exception_log.read_entry.assert_called_with(42)
+    body = await resp.text()
+    assert json.loads(body) == expected_info
 
 async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)

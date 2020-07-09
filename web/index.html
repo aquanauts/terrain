@@ -33,11 +33,10 @@
             <li class="nav-item">
               <a class="nav-link" href="#home">Home</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#errorLog">Error Log</a>
+            </li>
           </ul>
-          <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Username" aria-label="Username">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
-          </form>
         </div>
       </nav>
 
@@ -47,7 +46,7 @@
       <div class="templates">
         <div class="homeView mt-5">
           <p>Hello World!</p>
-          <a href="#errorLog" target="_blank">Click here to view the error log.</a>
+          <a href="#errorLog">Click here to view the error log.</a>
         </div>
 
         <div class="logView">
@@ -61,16 +60,22 @@
           </div>
         </div>
 
-        <table class='errorLogTable'>
-          <thead>
-            <tr>
-              <th>No.</th>
-              <th>errorEventMessage</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
+        <div class="extraInfoView">
+          <div class="container">
+            <h1>Log Entry Details</h1>
+            <table class="table extraInfoTable">
+            </table>
+          </div>
+        </div>
+
+        <div class="sessionInfoView">
+          <div class="container">
+            <h1>Session Error Details</h1>
+              <table class="table" id="sessionInfoTable">
+              </table>
+          </div>
+        </div>
+
       </div>
     </div>
 

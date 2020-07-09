@@ -22,6 +22,12 @@ def test_reads_from_a_file():
         log.read()
         mock_fn.assert_called_with("exceptions.txt", "r")
 
+def test_reads_entry_from_a_file():
+    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
+        mock_fn.return_value.readlines.return_value = ['{"line":1}', '{"line":2}']
+        log = ExceptionLog()
+        assert log.read_entry(entry_id=0) == {"line": 1}
+        mock_fn.assert_called_with("exceptions.txt", "r")
 
 def test_reads_correct_content():
     with mock.patch('builtins.open', mock.mock_open()) as mock_fn:

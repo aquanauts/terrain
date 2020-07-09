@@ -1,29 +1,15 @@
 // Try to avoid jquery here!
-window.addEventListener('load', function() {  
-    console.log("Terrain is active!");
-    currentURL = window.location["href"];
+// localStorage.removeItem("sessionID");
+
+// window.__terrainSesssionId = "replace with actual session id";
+
+window.addEventListener('load', function() {
+    id = generateSessionID("sessionID");
+    console.log("Terrain is active! sessionID = ", id);
+
 });
 
-windowHistory = [];
-
-function appendToHistory(currentURL) {
-    windowHistory.push(currentURL);
-};
-
 async function postTerrainError(errorInfo) {
-    //jQuery alternative 1: with XMLHttpRequest:
-
-    /*postRequestObject = new XMLHttpRequest();
-    postRequestObject.open("POST", '/receive_error', true);
-    postRequestObject.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    postRequestObject.send(JSON.stringify(errorInfo));
-    
-    const rawResponse = await postRequestObject.response;
-    const response = await rawResponse.json();
-    console.log(response);
-    */
-
-    //jQuery alternative 2: with fetch
 
     const rawResponse = await fetch('/receive_error', {
         method: 'POST',
@@ -33,33 +19,88 @@ async function postTerrainError(errorInfo) {
             },
         body: JSON.stringify(errorInfo)
     });
-//    const response = await rawResponse.json(); //TODO https://stackoverflow.com/questions/59728992/fetch-api-can-await-res-json-fail-after-a-completed-request
-    console.log(rawResponse);      
-//    console.log(response);
 
 };
 
+function generateSessionID(idName){ // TODO get sessionID from server
+
+    if(localStorage.getItem(idName) != null){
+        var id = localStorage.getItem(idName);
+        localStorage.setItem(idName, Number(id)+1);
+    }
+    else{
+        localStorage.setItem(idName, 1);
+    }
+    id = localStorage.getItem(idName);
+    return id;
+};
+
+
+// https://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser
+function extractBrowserInfo(userAgent){  
+
+    var ua = userAgent,tem;
+    var M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || []; 
+    if(/trident/i.test(M[1])){
+        tem=/\brv[ :]+(\d+)/g.exec(ua) || []; 
+        return {name:'IE',version:(tem[1]||'')};
+    }   
+     if(M[1]==='Chrome'){
+        tem=ua.match(/\bOPR|Edge\/(\d+)/)
+        if(tem!=null)   {return {name:'Opera', version:tem[1]};}
+    }   
+       
+    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];
+    
+    if((tem=ua.match(/version\/(\d+)/i))!=null) {M.splice(1,1,tem[1]);}
+        
+    return {
+            name: M[0],
+            version: M[1]
+    };
+ };
+
+function extractPlatformInfo(userAgent){ // TODO https://developers.whatismybrowser.com/api/docs/v2/integration-guide/
+
+    var ua = userAgent
+    var m = ua.match(/[(][\s\S]*[windows|mac os|android|iphone os|macos|ubuntu|linux][\s\S]*[)]/i) || [];
+    var platform = m[0].split(')')[0].substring(1,);
+    return platform;
+};
+
+        
 function recordError(errorEvent) {
     console.log("An error was found!");
     console.log(arguments);
+    console.log("Session: " + localStorage.getItem("sessionID"));
     
-    var environmentInfo = { 
+    var browserInfo = extractBrowserInfo(window.navigator.userAgent);
+    var translatedErrorEvent = {
+        session: localStorage.getItem("sessionID"),
+        errorEventMessage: errorEvent.message.split(': ')[0],
+        errorName: errorEvent.error.toString().split(': ')[0],
+        errorMessage: errorEvent.error.toString().split(': ')[1],
+        errorStack: errorEvent.error.stack,
         url: window.location["href"],
         host: window.location["host"],
-        history: windowHistory
-    };
+        jsHeapSizeLimit: window.performance.memory.jsHeapSizeLimit,
+        totalJSHeapSize: window.performance.memory.totalJSHeapSize,
+        usedJSHeapSize: window.performance.memory.usedJSHeapSize,
+        networkType: window.navigator.connection.effectiveType,
+        rtDelayTime: window.navigator.connection.rtt,
+        bandwidthMbps: window.navigator.connection.downlink, // Browser compatibility questionable
+        logicalProcessors: window.navigator.hardwareConcurrency,
+        browser: browserInfo["name"], // TODO use regex to get specific OS/browserinfo
+        browserVersion: browserInfo["version"],
+        platform: extractPlatformInfo(window.navigator.userAgent),
+        cookiesEnabled: window.navigator.cookieEnabled
 
-    translatedErrorEvent = {
-        errorEventMessage: errorEvent.type,
-        errorName: errorEvent.error.toString(),
-        errorMessage: errorEvent.message
-        //environmentInfo: environmentInfo
     };
     
 
-    console.log(environmentInfo);
+    console.log(translatedErrorEvent);
     postTerrainError(translatedErrorEvent);
 };
 
 window.addEventListener('error', recordError);
-window.addEventListener('popstate', appendToHistory()); //TODO find a more accurate event
+

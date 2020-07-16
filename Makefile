@@ -8,6 +8,9 @@ PYTHON := $(VENV)/bin/python
 PYTHON_CMD := PYTHONPATH=$(CURDIR) $(PYTHON)
 PROJECT_NAME=$(shell basename $(CURDIR))
 PYLINT_CMD := $(PYTHON_CMD) -m pylint $(PROJECT_NAME) test
+DOCKER := $(shell which docker || echo ".docker_is_missing")
+DOCKER_IMAGE := aquatic.com/terrain
+VERSION := latest
 
 ifndef VERBOSE
 .SILENT:
@@ -68,3 +71,10 @@ run: $(DEPS) ## Run the main function
 .PHONY: run-dev
 run-dev: $(DEPS) ## Run in development mode
 	$(VENV)/bin/adev runserver --static web --static-url / --livereload --aux-port 35729 $(PROJECT_NAME)
+
+docker: $(DOCKER)
+	$(DOCKER) build . -t $(DOCKER_IMAGE):$(VERSION)
+
+docker-run: docker ## Run in docker
+	mkdir -p $(CURDIR)/data
+	docker run --rm -it -p 8080:8080 -v $(CURDIR)/data:/root/data $(DOCKER_IMAGE):$(VERSION)

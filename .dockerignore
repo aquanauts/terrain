@@ -1,0 +1,5 @@
+.git
+.miniconda3
+.venv
+**/__pycache__
+data

@@ -10,6 +10,6 @@ export function routes() {
         '#home': homeView,
         '#errorLog' : logView,
         '#extraInfo': extraInfoView,
-        '#sessionInfo': sessionView
+        '#sessionID': sessionView
     }
 }

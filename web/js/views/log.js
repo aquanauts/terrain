@@ -1,66 +1,52 @@
-export function generateExtraInfoView(no, jsonEntry){
-    let extraInfoView = template('extraInfoView');            
-    const container = view.find("#extraInfoTable").get(0);
-    $(container).append("Entry number: "+ no.toString())
-    for(var key in jsonEntry){
-        $(container).append(
-            "<tr>\n" +
-            "<td>" + key + "</td>\n" +
-            "<td>" + jsonEntry[key] + "</td>\n" +
-            "</tr>\n"
-        )
-    }
-    
-    return extraInfoView;
-}
 
-export function generateSessionView(sessionID){
-    let sessionView = template('sessionView');
-    return sessionView;
-}
-
-export function generateErrorTable(data, view){
-
-          // TODO view.append(errorTable(errorArray));
+export function generateErrorTable(data, view){ //data is a string of json objects/dicts separated by \n
           const errorArray = data.split("\n");            
-          const container = view.find("#errorTable").get(0);
-      
-          $(container).append(
-              "<tr>\n"+
-              "<th>No.</th>\n" +
-              "<th>SessionID</th>\n" +
-              "<th>Error Event Message</th>\n" +
-              "<th>Error Message</th>\n" +
-              "<th>URL</th>\n"+
-              "</tr>\n"
-        )
+          const table = view.find("#errorTable").get(0);
+            
+          const headingRow = $("<tr>");
+          
+          $(headingRow).append($("<th>").text("No."));
+          $(headingRow).append($("<th>").text("Session ID"));
+          $(headingRow).append($("<th>").text("Error Event Message"));
+          $(headingRow).append($("<th>").text("Error Message"));
+          $(headingRow).append($("<th>").text("URL"));
+        
+          $(table).append(headingRow);
 
           if(errorArray.length > 0) { 
-              for(var i = 0; i < errorArray.length - 1; i++) { //TODO recent 500
+              for(var i = 0; i < errorArray.length-1; i++) { //TODO recent 500
                   var jsonEntry = JSON.parse(errorArray[i]); // Cannot deal with empty strings
-                  // TODO Replace with jQuery (and write tests!)
-                  $(container).append(
-                      "<tr>\n" +
-                      "<td>\n" + 
-                            `<a href='#extraInfo-${i}'>`+
-                      i.toString()+
-                            "</a>\n"+ 
-                      "</td>\n" +
-                      "<td>"+jsonEntry["session"]+"</td>\n" +
-                      "<td>"+jsonEntry["errorEventMessage"]+"</td>\n" +
-                      "<td>"+jsonEntry["errorMessage"]+"</td>\n" +
-                      "<td>"+jsonEntry["url"]+"</td>\n"
-                    )
+                  const infoRow = $("<tr>");
+                  var extraInfoLink = $("<a>");
+                  var sessionIDLink = $("<a>");
+                  var urlLink = $("<a>");
+
+                  extraInfoLink.attr('href', `#extraInfo-${i}`);
+                  extraInfoLink.text(i.toString());
+
+                  sessionIDLink.attr('href', `#sessionID-${jsonEntry["session"]}`);
+                  sessionIDLink.text(jsonEntry["session"]);
+                  
+                  urlLink.attr('href', `${jsonEntry["url"]}`);
+                  urlLink.text(jsonEntry["url"])
+                  
+                  $(infoRow).append($("<td>").append(extraInfoLink));
+                  $(infoRow).append($("<td>").append(sessionIDLink));
+                  $(infoRow).append($("<td>").text(jsonEntry["errorEventMessage"]));
+                  $(infoRow).append($("<td>").text(jsonEntry["errorMessage"]));
+                  $(infoRow).append($("<td>").append(urlLink));
+
+                  $(table).append(infoRow);
                 }
         }
 }
 
-export default function() {
+export default function logViewFn() {
     let view = template('logView');
-    fetch('/show_errors').then(function(response) {
-          return response.text();
-      }).then(function(data) {
-          generateErrorTable(data, view)
-      })
-    return view;
+    
+    $.get('/show_errors').then(function(data) {
+        generateErrorTable(data, view)
+        })
+
+        return view;
 }

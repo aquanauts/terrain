@@ -42,3 +42,12 @@ body {
   font-size: calc(var(--size-navbar-height) / 2);
   vertical-align: top;
 }
+
+td {
+  padding:0 15px;
+  border-width: 1px 0;
+  border-color: #000;
+  border-style: solid;
+}
+
+

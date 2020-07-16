@@ -1,16 +1,11 @@
 describe('Client Library', function () {
     
-    it('can set and update sessionID', function () {
-        if(localStorage.getItem("testID") != null){
-            localStorage.removeItem("testID");
-        }
-        const testID1 = generateSessionID("testID");
-        const testID2 = generateSessionID("testID");
-        expect(testID1).toBe('1');
-        expect(testID2).toBe('2');
-
-        localStorage.removeItem("testID");
-
+    it('has integer sessionID', async function () {
+        const receivedID = window.__terrainSessionID;
+        expect(receivedID).toEqual(jasmine.any(Number));
+       // $.get("/t.js").then(async (updatedLibrary) => {
+       //     expect(updatedLibrary).toContain('window.__terrainSessionID =' + receivedID.toString());
+       // });
     });
 
 
@@ -43,7 +38,7 @@ describe('Client Library', function () {
         const cookiesEnabled = window.navigator.cookieEnabled
 
         const expectedPostBody = {
-            session: localStorage.getItem("sessionID"),
+            session: window.__terrainSessionID,
             errorEventMessage: "Error message",
             errorName: "Error",
             errorMessage: "Error name",
@@ -84,6 +79,8 @@ describe('Client Library', function () {
              }
         );
     });
+
+
 
     
 });

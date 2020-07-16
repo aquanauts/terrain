@@ -37,3 +37,10 @@ def test_reads_correct_content():
         mock_fn.return_value.read.return_value = "something\nsomething_else\n"
         assert log.read() == "something\nsomething_else\n"
         # https://stackoverflow.com/questions/18191275/using-pythons-mock-patch-object-to-change-the-return-value-of-a-method-called-w
+
+def test_reads_session_entries_from_a_file(): # key must be identical to actual key used
+    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
+        mock_fn.return_value.readlines.return_value = ['{"session":11}', '{"session":7}', '{"session":7}']
+        log = ExceptionLog()
+        assert log.find_session(session_id=7) == [{"session": 7}, {"session": 7}]
+        mock_fn.assert_called_with("exceptions.txt", "r")

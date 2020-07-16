@@ -19,6 +19,16 @@ class ExceptionLog:
             entry = json.loads(all_entries[entry_id])
         return entry
 
+    def find_session(self, session_id):
+        with open("exceptions.txt", "r") as exceptions:
+            session_entries = []
+            all_entries = exceptions.readlines()
+            for entry in all_entries:
+                dict_entry = json.loads(entry)
+                if "session" in dict_entry and dict_entry["session"] == session_id:
+                    session_entries.append(json.loads(entry))
+            return session_entries
+
     def readlines(self):
         with open("exceptions.txt", "r") as exceptions:
             content = exceptions.readlines()

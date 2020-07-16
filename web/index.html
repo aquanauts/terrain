@@ -55,27 +55,40 @@
             <p>Hello World!</p>
             <!-- Add searching, sorting, filtering capabilities -->
 
-            <table class="table" id="errorTable">
+            <table class="table table-striped table-bordered" id="errorTable">
             </table>
           </div>
         </div>
 
         <div class="extraInfoView">
           <div class="container">
-            <table class="table extraInfoTable">
+            <h1></h1>
+          </div>
+          <div class="container">
+            <table class="table extraInfoTable table-striped table-bordered">
             </table>
           </div>
         </div>
 
         <div class="sessionInfoView">
           <div class="container ml-0">
-              <table class="table sessionInfoTable">
+            <h1></h1>
+            <p></p>
+          </div>
+          <div class = "container ml-0 sessionInfoHide">
+          </div>
+          <div class="container ml-0">
+              <table class="table sessionInfoTable table-striped table-bordered">
               </table>
           </div>
         </div>
-
       </div>
     </div>
+    <script type="text/javascript"> //TODO TEST    
+    function hideByClass(className) {
+        $(`.table .${className}`).toggle("hide");
+    }
+    </script>
 
     <script type="module">
       import {routes} from './js/app.js';

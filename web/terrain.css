@@ -43,11 +43,16 @@ body {
   vertical-align: top;
 }
 
+.hide {
+  display: none;
+}
+
 td {
   padding:0 15px;
   border-width: 1px 0;
   border-color: #000;
   border-style: solid;
 }
+
 
 

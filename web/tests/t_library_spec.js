@@ -10,7 +10,7 @@ describe('Client Library', function () {
 
 
 
-    it('can handle error events', function () { // TODO update with new info
+    it('can handle error events', function () { // 
         const errorEvent = new ErrorEvent("", {
                 error: new Error("Error name"),
                 message: "Error message",
@@ -18,10 +18,6 @@ describe('Client Library', function () {
         );
         var browserInfo = extractBrowserInfo(window.navigator.userAgent);
          
-        //session: localStorage.getItem("sessionID"),
-        //errorEventMessage: errorEvent.message.split(': ')[0],
-        //errorName: errorEvent.error.toString().split(': ')[0],
-        //errorMessage: errorEvent.error.toString().split(': ')[1],
         const errorStack = errorEvent.error.stack;
         const url =  window.location["href"];
         const host =  window.location["host"];
@@ -38,7 +34,7 @@ describe('Client Library', function () {
         const cookiesEnabled = window.navigator.cookieEnabled
 
         const expectedPostBody = {
-            session: window.__terrainSessionID,
+            session: window.__terrainSessionID.toString(),
             errorEventMessage: "Error message",
             errorName: "Error",
             errorMessage: "Error name",
@@ -52,10 +48,11 @@ describe('Client Library', function () {
             rtDelayTime: rtDelayTime,
             bandwidthMbps: bandwidthMbps, // Browser compatibility questionable
             logicalProcessors: logicalProcessors,
-            browser: browser, // TODO use regex to get specific OS/browserinfo
+            browser: browser,
             browserVersion: browserVersion,
             platform: platform,
-            cookiesEnabled: cookiesEnabled
+            cookiesEnabled: cookiesEnabled,
+            hashHistory: [window.location["href"]]
         };
         spyOn(window, 'postTerrainError');
         recordError(errorEvent);

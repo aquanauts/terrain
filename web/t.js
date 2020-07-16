@@ -1,11 +1,18 @@
 // Try to avoid jquery here!
 
 window.__terrainSessionID = "replace with actual session id";
+let hashHistory = [];
 
 window.addEventListener('load', function() {
-    id = window.__terrainSessionID; // TODO Test on this side as well
+    id = window.__terrainSessionID; 
+    hashHistory.push(window.location["href"]);
     console.log("Terrain is active! sessionID = ", id);
 
+});
+
+window.addEventListener('hashchange', function() { //TODO test, how to record other URL changes
+    hashHistory.push(window.location["href"]);
+    console.log("History now reflects: ", hashHistory);
 });
 
 async function postTerrainError(errorInfo) {
@@ -63,7 +70,7 @@ function recordError(errorEvent) {
     var browserInfo = extractBrowserInfo(window.navigator.userAgent);
     
     var translatedErrorEvent = {
-        session: window.__terrainSessionID,
+        session: window.__terrainSessionID.toString(),
         errorEventMessage: errorEvent.message.split(': ')[0],
         errorName: errorEvent.error.toString().split(': ')[0],
         errorMessage: errorEvent.error.toString().split(': ')[1],
@@ -80,8 +87,8 @@ function recordError(errorEvent) {
         browser: browserInfo["name"], // TODO use regex better to get specific OS/browserinfo
         browserVersion: browserInfo["version"],
         platform: extractPlatformInfo(window.navigator.userAgent),
-        cookiesEnabled: window.navigator.cookieEnabled
-
+        cookiesEnabled: window.navigator.cookieEnabled,
+        hashHistory: hashHistory
     };
     
 

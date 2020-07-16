@@ -18,7 +18,7 @@ describe('Session Info View', () => {
     it('renders the error info in a table', async () => {
         let errorInfo = [{"session": "47", "errorEventMessage":"Some error"}, {"session":"47", "errorEventMessage":"Another error"}];
         errorInfoDeferred.resolve(errorInfo);
-        expect(view.find('tr:nth-child(1) th:nth-child(1)').text()).toEqual("Entry No.");
+        expect(view.find('tr:nth-child(1) th:nth-child(1)').text()).toEqual("No.");
         expect(view.find('tr:nth-child(2)  td:nth-child(2)').text()).toEqual("Some error");
     });
 });

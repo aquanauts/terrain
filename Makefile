@@ -9,8 +9,9 @@ PYTHON_CMD := PYTHONPATH=$(CURDIR) $(PYTHON)
 PROJECT_NAME=$(shell basename $(CURDIR))
 PYLINT_CMD := $(PYTHON_CMD) -m pylint $(PROJECT_NAME) test
 DOCKER := $(shell which docker || echo ".docker_is_missing")
-DOCKER_IMAGE := aquatic.com/terrain
-VERSION := latest
+DOCKER_IMAGE := artifactory.aq.tc/interns/terrain-server
+VERSION := $(shell git rev-list --count master)$(subst -master,,-$(shell git rev-parse --abbrev-ref HEAD))
+export NOMAD_ADDR := https://nomad.aq.tc/
 
 ifndef VERBOSE
 .SILENT:
@@ -73,8 +74,17 @@ run-dev: $(DEPS) ## Run in development mode
 	$(VENV)/bin/adev runserver --static web --static-url / --livereload --aux-port 35729 $(PROJECT_NAME)
 
 docker: $(DOCKER)
-	$(DOCKER) build . -t $(DOCKER_IMAGE):$(VERSION)
+	$(DOCKER) build . -t $(DOCKER_IMAGE):latest
 
 docker-run: docker ## Run in docker
 	mkdir -p $(CURDIR)/data
 	docker run --rm -it -p 8080:8080 -v $(CURDIR)/data:/root/data $(DOCKER_IMAGE):$(VERSION)
+
+.PHONY: release
+release: test docker  ## Build a new docker image and deploy to nomad
+	docker tag $(DOCKER_IMAGE):latest $(DOCKER_IMAGE):$(VERSION)
+	$(DOCKER) push $(DOCKER_IMAGE):$(VERSION)
+	$(DOCKER) push $(DOCKER_IMAGE):latest
+	echo "Releasing version $(VERSION)"
+	nomad job status terrain &> /dev/null && nomad job stop terrain
+	$(PYTHON) nomad_render.py --version "$(VERSION)" terrain.nomad | nomad job run -

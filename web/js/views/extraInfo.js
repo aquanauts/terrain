@@ -41,10 +41,15 @@ export default function(no) {
         for(var key in errorInfo){
             const infoRow = $('<tr>');
             const boldHeading = $('<b>').append(keysAndHeadings[key]);
-            
             infoRow.append($('<td>').append(boldHeading));
-            
-            if(key == 'session'){
+
+            if((key == 'errorName')|(key == 'errorEventMessage')|(key == 'errorMessage')|( key == 'errorStack')){
+                const infoText = $('<p>').text(errorInfo[key]);
+                const fixedWidthFormat = $('<pre>').append($('<code>').append(infoText));
+                infoRow.append($('<td>').append(fixedWidthFormat));
+            }
+
+            else if(key == 'session'){
                 const sessionLink = $("<a>");
                 sessionLink.attr('href', `#sessionID-${errorInfo[key]}`);
                 sessionLink.text(errorInfo[key]);
@@ -87,7 +92,7 @@ export default function(no) {
             
             tableBody.append(infoRow);
          }
-    table.bootstrapTable();    
+   table.bootstrapTable();    
     });
 
     return view;

@@ -30,7 +30,11 @@ export function generateErrorTable(data, view){ //data is a string of json objec
                     var extraInfoLink = $("<a>");
                     var sessionIDLink = $("<a>");
                     var urlLink = $("<a>");
-
+                    const errorMessageText = $("<p>").text(jsonEntry['errorMessage']);
+                    const errorMessage =$('<pre>').append($('<code>').append(errorMessageText));
+                    const errorEventMessageText = $("<p>").text(jsonEntry['errorEventMessage']);
+                    const errorEventMessage =$('<pre>').append($('<code>').append(errorEventMessageText));
+                    
                     extraInfoLink.attr('href', `#extraInfo-${i}`);
                     extraInfoLink.text(i.toString());
 
@@ -38,12 +42,13 @@ export function generateErrorTable(data, view){ //data is a string of json objec
                     sessionIDLink.text(jsonEntry["session"]);
                   
                     urlLink.attr('href', `${jsonEntry["url"]}`);
-                    urlLink.text(jsonEntry["url"])
-                  
+                    urlLink.text(jsonEntry["url"]);
+                    
+                
                     $(infoRow).append($("<td>").append(extraInfoLink));
                     $(infoRow).append($("<td>").append(sessionIDLink));
-                    $(infoRow).append($("<td>").text(jsonEntry["errorEventMessage"]));
-                    $(infoRow).append($("<td>").text(jsonEntry["errorMessage"]));
+                    $(infoRow).append($("<td>").append(errorEventMessage));
+                    $(infoRow).append($("<td>").append(errorMessage));
                     $(infoRow).append($("<td>").append(urlLink));
 
                     $(table).append(tableBody);

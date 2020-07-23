@@ -80,7 +80,18 @@ export default function(sessionID){
             const infoRow = $('<tr>');
             $('<td>').text(entry.toString()).appendTo(infoRow);
             for(var key in keysAndHeadings){
-                $(`<td class="toggle-${key}">`).text(errorArray[entry][key]).appendTo(infoRow);;
+                if(key == 'date'){
+                    $(`<td class="toggle-${key}">`).text(Date(errorArray[entry][key])).
+                        appendTo(infoRow);
+                }
+            
+                else if((key == 'errorName')|(key == 'errorEventMessage')|(key == 'errorMessage')|( key == 'errorStack')){
+                    console.log(key);
+                    $(`<td class="toggle-${key}">`).append($('<pre>').append($('<code>').append($('<p>').text(errorArray[entry][key])))).appendTo(infoRow); //TODO refactor, renderer fn
+                }
+                else {
+                    $(`<td class="toggle-${key}">`).text(errorArray[entry][key]).appendTo(infoRow);
+                }
             };
 
             tableBody.append(infoRow);

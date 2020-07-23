@@ -40,13 +40,14 @@ class Terrain:
     async def root_index(self, _):
         return web.FileResponse("web/index.html")
 
-    async def generate_library(self, _): # TODO test
-        library_file = open('web/t.js', 'r')
-        content = library_file.read()
-        library_file.close()
+    async def generate_library(self, _):
+        with open('web/t.js', 'r') as library_file:
+            content = library_file.read()
         new_id = self.session_id_store.generate_new_id()
         library_with_id = content.replace('"replace with actual session id"', str(new_id), 1)
-        return web.Response(text=library_with_id)
+        # TODO Don't write this to disk, just return a web.Response
+        # with the correct content-type: application/json
+        return web.Response(body=library_with_id, content_type='application/javascript')
 
 async def on_prepare(_, response):
     response.headers['cache-control'] = 'no-cache'

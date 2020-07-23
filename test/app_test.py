@@ -37,6 +37,11 @@ async def test_adds_cache_control_header(aiohttp_client, webapp):
     resp = await client.get('/')
     assert "no-cache" in resp.headers['cache-control']
 
+async def test_library_is_application_javascript_content_type(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    resp = await client.get('/t.js')
+    assert "application/javascript" in resp.headers['content-type']
+
 async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, exception_log):
     client = await aiohttp_client(webapp)
     exception_data = {"message": "message"}

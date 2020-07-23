@@ -13,6 +13,7 @@ describe('Client Library', function () {
                 message: "Error message",
             }
         );
+        
         var browserInfo = extractBrowserInfo(window.navigator.userAgent);
          
         const errorStack = errorEvent.error.stack;
@@ -28,8 +29,14 @@ describe('Client Library', function () {
         const browser = browserInfo["name"];
         const browserVersion =  browserInfo["version"];
         const platform = extractPlatformInfo(window.navigator.userAgent);
-        const cookiesEnabled = window.navigator.cookieEnabled
-
+        const cookiesEnabled = window.navigator.cookieEnabled;
+        const dateConstructor = new Date();
+        
+        spyOn(window, 'postTerrainError');
+        
+        const date = dateConstructor.getTime(); //Must be called right before recordError (timestamp)
+        recordError(errorEvent);
+        
         const expectedPostBody = {
             session: window.__terrainSessionID.toString(),
             errorEventMessage: "Error message",
@@ -49,12 +56,11 @@ describe('Client Library', function () {
             browserVersion: browserVersion,
             platform: platform,
             cookiesEnabled: cookiesEnabled,
+            date: date,
             sessionHistory: sessionStorage.getItem('history'),
             visibility: document.visibilityState
         };
 
-        spyOn(window, 'postTerrainError');
-        recordError(errorEvent);
         expect(postTerrainError).toHaveBeenCalledWith(expectedPostBody);
     });
 

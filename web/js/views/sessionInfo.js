@@ -17,6 +17,7 @@ const keysAndHeadings = {
     "platform":"OS Platform",
     "cookiesEnabled":"Cookies Enabled",
     "visibility":"Visibility",
+    "date":"Date and Time",
     "sessionHistory":"Session History"
 };
 

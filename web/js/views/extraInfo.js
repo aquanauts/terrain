@@ -19,6 +19,7 @@ const keysAndHeadings = {
     "platform":"OS Platform",
     "cookiesEnabled":"Cookies Enabled",
     "visibility":"Visibility",
+    "date":"Date and Time",
     "sessionHistory":"Session History"
 };
 
@@ -49,6 +50,10 @@ export default function(no) {
                 sessionLink.text(errorInfo[key]);
                 infoRow.append($('<td>').append(sessionLink));
 
+            }
+
+            else if(key == 'date'){
+                infoRow.append($('<td>').append(Date(errorInfo[key])));
             }
             
             else if(key =='url'){

@@ -25,9 +25,10 @@ class ExceptionLog:
             all_entries = exceptions.readlines()
             for entry in all_entries:
                 dict_entry = json.loads(entry)
-                if ("session" in dict_entry) and (dict_entry["session"] == session_id or 
-                        dict_entry["session"] == int(session_id)): #should just be string ^, some entries in
-                    session_entries.append(dict_entry)          # current log were ints erroneously
+                if ("session" in dict_entry) and \
+                    (dict_entry["session"] == session_id or \
+                    dict_entry["session"] == int(session_id)):  # should just be string
+                    session_entries.append(dict_entry)  # current log had some ints erroneously
             return session_entries
 
     def readlines(self):

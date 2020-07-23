@@ -15,7 +15,9 @@ const keysAndHeadings = {
     "browser":"Browser",
     "browserVersion":"Browser Version",
     "platform":"OS Platform",
-    "cookiesEnabled":"Cookies Enabled"
+    "cookiesEnabled":"Cookies Enabled",
+    "visibility":"Visibility",
+    "sessionHistory":"Session History"
 };
 
 const keyArray = Object.keys(keysAndHeadings);
@@ -24,19 +26,20 @@ function addPageTitle(view, sessionID) {
         const heading = view.find('h1');
         $(heading).text(`Session ${sessionID.toString()} Error Details`);
         const message = view.find('p');
-        $(message).text("Check the boxes to hide columns.");
+        $(message).text("uncheck the boxes to hide columns.");
 };
 
-function addColumnHeadings(table){
+function addColumnHeadings(tableHeader){
         const headingRow = $('<tr>')
         headingRow.append($('<th>').text("No."));
 
         for(var key in keysAndHeadings){
             var columnHeading = keysAndHeadings[key];
-            headingRow.append($(`<th class=toggle-${key}>`).text(columnHeading));
+            $(`<th class=toggle-${key}>`).text(columnHeading).appendTo(headingRow);
         };
         
-        $(table).append(headingRow);
+        headingRow.appendTo(tableHeader);
+        
 };
 
 function addHideColumnsCheckboxes(view){ //TODO Test
@@ -44,46 +47,48 @@ function addHideColumnsCheckboxes(view){ //TODO Test
 
     for(var key in keysAndHeadings) {
         const formCheckDiv = $('<div class="form-check form-check-inline">');
-        const input = $('<input class="form-check-input" type="checkbox">');
+        const input = $('<input class="form-check-input" type="checkbox" checked>');
         const label = $('<label class="form-check-label">');
 
         input.attr('id', key);
         const className = "toggle-" + key.toString();
-        input.attr('onclick',`hideByClass("${className}")`)
+        input.click(() => {  
+            $('#sessionInfoTable').find(`.${className}`).fadeToggle("hide");
+        });
         label.attr('for', key);
-    
         formCheckDiv.append(input);
         formCheckDiv.append(label.text(keysAndHeadings[key]));
 
-        $(formContainer).append(formCheckDiv);
-    
+        formContainer.append(formCheckDiv);
     };
 };
 
 export default function(sessionID){
     let view = template('sessionInfoView');
-    const table = view.find('.sessionInfoTable').get(0);
-    //const container = view.find('.container').get(0);
+    const table = view.find('#sessionInfoTable');
+    const tableHeader = $('<thead>').appendTo(table);
+    const tableBody = $('<tbody>').appendTo(table);
 
     $.get("/get_session?sessionID=" + sessionID).then((errorArray) => {  
         
         addPageTitle(view, sessionID);
-        addColumnHeadings(table);
+        addColumnHeadings(tableHeader);
         
         
         for (var entry in errorArray) {
             const infoRow = $('<tr>');
-            infoRow.append($('<td>').text(entry.toString()));
+            $('<td>').text(entry.toString()).appendTo(infoRow);
             for(var key in keysAndHeadings){
-                infoRow.append($(`<td class="toggle-${key}">`).text(errorArray[entry][key]));;
+                $(`<td class="toggle-${key}">`).text(errorArray[entry][key]).appendTo(infoRow);;
             };
 
-            $(table).append(infoRow);
+            tableBody.append(infoRow);
         };
+    table.bootstrapTable();
     });
-
+      
     addHideColumnsCheckboxes(view);
-
+    
     return view;
 }
 

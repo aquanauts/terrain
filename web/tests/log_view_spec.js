@@ -12,7 +12,7 @@ describe('Log View', () => {
 
     it('Has a friendly greeting', async () => {
         const view = logView();
-        expect(view.find('p').text()).toEqual("Hello World!");
+        expect(view.find('p').text()).toContain("Hello World!");
     });
 
 
@@ -22,14 +22,18 @@ describe('Log View', () => {
     
     it('shows headings specified in the view', async () => {
         errorInfoDeferred.resolve('{} \n');
-        expect(view.find('tr:first th:first').text()).toEqual("No.");
-        expect(view.find('tr:first th:last').text()).toEqual("URL");
+        const firstHeading = view.find('tr:first th:first');
+        const lastHeading = view.find('tr:first th:last');
+        expect(firstHeading.find('.th-inner').text()).toEqual("No.");
+        expect(lastHeading.find('.th-inner').text()).toEqual("URL");
     });
 
     it('renders the error info in a table', async () => {
         let errorInfo = '{"session": "4","errorEventMessage": "Uncaught TypeError"}\n'; 
         errorInfoDeferred.resolve(errorInfo);
-        expect(view.find('tr:nth-child(2) td:nth-child(2)').text()).toEqual("4");
-        expect(view.find('tr:nth-child(2) td:nth-child(3)').text()).toEqual("Uncaught TypeError");
+        const firstValue = view.find('tbody').find('tr:nth-child(1) td:nth-child(2)');
+        const lastValue = view.find('tbody').find('tr:nth-child(1) td:nth-child(3)');
+        expect(firstValue.text()).toEqual("4");
+        expect(lastValue.text()).toEqual("Uncaught TypeError");
     });
 });

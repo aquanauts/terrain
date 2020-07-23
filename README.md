@@ -5,11 +5,11 @@ Remote web application monitoring
 
 # Getting Started
 
-Terrain is packaged as a docker image. To run it, use docker, like so:
+Terrain is packaged as a docker image. Run it like so:
 
 ```bash
 sudo mkdir -p /usr/share/terrain/data
-docker run --rm -it -v /usr/share/terrain/data:/root/data aquatic.com/terrain bash
+docker run --rm -it -p 8080:8080 -v /usr/share/terrain/data:/root/data aquatic.com/terrain
 ```
 
 Now, open your browser and go to [http://localhost:8080/example](http://localhost:8080/example). This is an example application that include the Terrain client library. Generate some data for yourself by triggering some error on this page. Then, you can visit the [Terrain UI](http://localhost:8080) to see these errors.

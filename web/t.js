@@ -1,18 +1,30 @@
 // Try to avoid jquery here!
 
 window.__terrainSessionID = "replace with actual session id";
-let hashHistory = [];
+var sessionHistory = [];
 
-window.addEventListener('load', function() {
-    id = window.__terrainSessionID; 
-    hashHistory.push(window.location["href"]);
+window.addEventListener('load', function() { //TODO test
+    if (sessionStorage.getItem('sessionID') == null){
+        id = window.__terrainSessionID;
+        sessionStorage.setItem('sessionID', id);
+        
+    }
+    else {
+        id = sessionStorage.getItem('sessionID');
+        sessionHistory = sessionStorage.getItem('history').split(',');
+    } 
+
+    sessionHistory.push(window.location["href"]+"");
+    sessionStorage.setItem('history', sessionHistory);
     console.log("Terrain is active! sessionID = ", id);
+    //console.log("Session History:" , sessionHistory);
 
 });
 
 window.addEventListener('hashchange', function() { //TODO test, how to record other URL changes
-    hashHistory.push(window.location["href"]);
-    console.log("History now reflects: ", hashHistory);
+    sessionHistory.push(window.location["href"]);
+    sessionStorage.setItem('history', sessionHistory);
+    //console.log("Session History: ", sessionHistory);
 });
 
 async function postTerrainError(errorInfo) {
@@ -61,11 +73,19 @@ function extractPlatformInfo(userAgent){ // TODO https://developers.whatismybrow
     return platform;
 };
 
-        
+function makeSessionHistoryReadable(sessionHistoryRaw){
+    const historyArray = sessionHistoryRaw.split(',');
+    var historyString = "";
+    for(var index in historyArray){
+        historyString = historyString.concat(historyArray[index]+"\n\n");
+    };
+    return historyString;
+};
+
 function recordError(errorEvent) {
     console.log("An error was found!");
     console.log(arguments);
-    console.log("Session: " + window.__terrainSessionID);
+    console.log("Session: " + sessionStorage.getItem('sessionID'));
     
     var browserInfo = extractBrowserInfo(window.navigator.userAgent);
     
@@ -88,11 +108,12 @@ function recordError(errorEvent) {
         browserVersion: browserInfo["version"],
         platform: extractPlatformInfo(window.navigator.userAgent),
         cookiesEnabled: window.navigator.cookieEnabled,
-        hashHistory: hashHistory
+        visibility: document.visibilityState,
+        sessionHistory: sessionStorage.getItem('history'), // comma separated list
     };
     
 
-    console.log(translatedErrorEvent);
+    //console.log(translatedErrorEvent);
     postTerrainError(translatedErrorEvent);
 };
 

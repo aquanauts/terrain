@@ -4,3 +4,4 @@
 __pycache__
 .miniconda3
 exceptions.txt
+session_id_store.txt

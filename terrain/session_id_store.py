@@ -1,8 +1,12 @@
+import os.path
+
 class SessionIDStore:
     def __init__(self):
         self.current_id = self.read_current_id()
 
     def read_current_id(self) -> int:
+        if os.path.isfile('session_id_store.txt') is not True:
+            open('session_id_store.txt', 'w')
         with open('session_id_store.txt', 'r+') as session_id_file:
             current_id = session_id_file.read()
             if current_id == "":

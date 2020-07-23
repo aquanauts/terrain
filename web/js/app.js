@@ -5,9 +5,10 @@ import sessionView from './views/sessionInfo.js';
 
 export function routes() {
     return {
-        '': homeView,
-        '#': homeView,
-        '#home': homeView,
+        '': logView,
+        '/index.html': logView,
+        '#': logView,
+        '#home': logView,
         '#errorLog' : logView,
         '#extraInfo': extraInfoView,
         '#sessionID': sessionView

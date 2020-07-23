@@ -25,6 +25,11 @@ body {
   font-family: 'Open Sans', sans-serif!important;
 }
 
+.container {
+  margin-top: 30px;
+  margin-left: 50px;
+}
+
 .templates {
   display: none;
 }
@@ -53,6 +58,3 @@ td {
   border-color: #000;
   border-style: solid;
 }
-
-
-

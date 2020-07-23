@@ -3,14 +3,11 @@ describe('Client Library', function () {
     it('has integer sessionID', async function () {
         const receivedID = window.__terrainSessionID;
         expect(receivedID).toEqual(jasmine.any(Number));
-       // $.get("/t.js").then(async (updatedLibrary) => {
-       //     expect(updatedLibrary).toContain('window.__terrainSessionID =' + receivedID.toString());
-       // });
     });
 
 
 
-    it('can handle error events', function () { // 
+    it('can handle error events', function () {
         const errorEvent = new ErrorEvent("", {
                 error: new Error("Error name"),
                 message: "Error message",
@@ -28,7 +25,7 @@ describe('Client Library', function () {
         const rtDelayTime =  window.navigator.connection.rtt;
         const bandwidthMbps =  window.navigator.connection.downlink; // Browser compatibility questionable
         const logicalProcessors =  window.navigator.hardwareConcurrency;
-        const browser = browserInfo["name"]; // TODO use regex to get specific OS/browserinfo
+        const browser = browserInfo["name"];
         const browserVersion =  browserInfo["version"];
         const platform = extractPlatformInfo(window.navigator.userAgent);
         const cookiesEnabled = window.navigator.cookieEnabled
@@ -52,8 +49,10 @@ describe('Client Library', function () {
             browserVersion: browserVersion,
             platform: platform,
             cookiesEnabled: cookiesEnabled,
-            hashHistory: [window.location["href"]]
+            sessionHistory: sessionStorage.getItem('history'),
+            visibility: document.visibilityState
         };
+
         spyOn(window, 'postTerrainError');
         recordError(errorEvent);
         expect(postTerrainError).toHaveBeenCalledWith(expectedPostBody);

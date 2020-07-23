@@ -13,9 +13,9 @@ describe('Extra Info View', () => {
     });
 
     it('renders the error info in a table', async () => {
-        let errorInfo = {"session":"4","errorEventMessage":"Uncaught TypeError"};
+        let errorInfo = {"session":"4", "errorEventMessage":"Uncaught TypeError"};
         errorInfoDeferred.resolve(errorInfo)
-        expect(view.find('tr:first td:first').text()).toEqual("Session");
-        expect(view.find('tr:first td:last').text()).toEqual("4");
+        expect(view.find('tr:nth-child(1) td:first').text()).toEqual("Session");
+        expect(view.find('tr:nth-child(1) td:last').text()).toEqual("4");
     });
 });

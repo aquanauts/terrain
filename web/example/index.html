@@ -3,60 +3,87 @@
   <head>
     <title>Terrain Example Application</title>
     <script type="text/javascript" src='/vendor/jquery-2.2.4/jquery-2.2.4.min.js'></script>
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-4.3.1/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/terrain.css" rel="stylesheet">
     <script type="text/javascript" src='/t.js'></script>
+    
     <script type="text/javascript">
-      function undefinedVariableError() {
-        foo.bar.baz();
-        recordError(error) //TODO deal with inconsistencies in format of errorEvent
-      }
-      
-      //TODO add more errors to check - subtypes within these broader types
-      //TODO add try catch blocks for all
-      function rangeError() {
-        
-          var randomArray = [];
-          var anElement = randomArray[2];
+      function rangeError() {  
+          throw new RangeError('Example created range error', 'non_existent.js', 1);
           recordError(error);
       }
-      
 
       function referenceError() {
-          if (random == 1) {
-              console.log("Equality!");
-          }
+          throw new ReferenceError('Example created reference error', 'non_existent.js', 1);
           recordError(error);
       }
 
       function typeError() {
-          null.f();
+          throw new TypeError('Example created type error', 'non_existent.js', 1);
           recordError(error);
       }
 
       function uriError() {
-          decodeURIComponent('%');
+          throw new URIError('Example created URI error', 'non_existent.js', 1);
           recordError(error);
       }
           
       function syntaxError() {
-          eval("for (let i = 0; i <=0, ++i) {}");
+          throw new SyntaxError('Example created syntax error', 'non_existent.js', 1);
           recordError(error);
       }
 
       function evalError() {
-          throw new EvalError('Created eval error', 'non_existent.js', 1);
+          throw new EvalError('Example created eval error', 'non_existent.js', 1);
           recordError(error);
       }
     </script>
   </head>
-  <body>
-    <h2>Click the buttons below to trigger errors</h2>
-    <p>Terrain will automatically listen for errors in your application, and log them to the Terrain server.</p>
-    <button onclick='undefinedVariableError()'>Undefined Variable Error</button>
-    <button onclick='uriError()'>URI Decoding Error</button>
-    <button onclick='rangeError()'>Range Error</button>
-    <button onclick='referenceError()'>Reference Error</button>
-    <button onclick='typeError()'>Type Error</button>
-    <button onclick='syntaxError()'>Syntax Error</button>
-    <button onclick='evalError()'>Eval Error</button>
-  </body>
+  <div class="markup">
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+        <span class='banner'>
+          <a href="#errorLog" class='navbar-brand'>
+            <span class="title">
+              Terrain
+            </span>
+          </a>
+        </span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/#errorLog" target="_self">Error Log</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/example/index.html" target="_self">Example Usage</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      
+      <div class="view-container container-fluid">
+      </div>
+
+      <div class="container">
+        <h2>Click the buttons below to trigger errors.</h2><br>
+        <p>Terrain will automatically listen for errors in your application, and log them to the Terrain server.</p>
+      </div>
+      <div class="container">
+        <p>To check out the logged error, visit: <a href="/#home" target="_self">Terrain Homepage</a>.</p>
+      </div>
+      <div class="container">
+        <button onclick='uriError()'>URI Error</button>
+        <button onclick='rangeError()'>Range Error</button>
+        <button onclick='referenceError()'>Reference Error</button>
+        <button onclick='typeError()'>Type Error</button>
+        <button onclick='syntaxError()'>Syntax Error</button>
+        <button onclick='evalError()'>Eval Error</button>
+      </div>
+    </body>
+  </div>
 </html>

@@ -42,5 +42,5 @@ def test_reads_session_entries_from_a_file(): # key must be identical to actual 
     with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
         mock_fn.return_value.readlines.return_value = ['{"session":11}', '{"session":7}', '{"session":7}']
         log = ExceptionLog()
-        assert log.find_session(session_id=7) == [{"session": 7}, {"session": 7}]
+        assert log.find_session(session_id=7) == [{"session": 7, "id": 1}, {"session": 7, "id": 2}]
         mock_fn.assert_called_with("exceptions.txt", "r")

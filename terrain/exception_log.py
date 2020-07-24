@@ -23,11 +23,12 @@ class ExceptionLog:
         with open("exceptions.txt", "r") as exceptions:
             session_entries = []
             all_entries = exceptions.readlines()
-            for entry in all_entries:
+            for idx, entry in enumerate(all_entries):
                 dict_entry = json.loads(entry)
+                dict_entry["id"] = idx
                 if ("session" in dict_entry) and \
                     (dict_entry["session"] == session_id or \
-                    dict_entry["session"] == int(session_id)):  # should just be string
+                    dict_entry["session"] == int(session_id)):# should just be string
                     session_entries.append(dict_entry)  # current log had some ints erroneously
             return session_entries
 

@@ -19,6 +19,7 @@ const keysAndHeadings = {
     "platform":"OS Platform",
     "cookiesEnabled":"Cookies Enabled",
     "visibility":"Visibility",
+    "dateTime":"Date and Time",
     "date":"Date and Time",
     "sessionHistory":"Session History"
 };
@@ -57,7 +58,7 @@ export default function(no) {
 
             }
 
-            else if(key == 'date'){
+            else if(key == 'dateTime' | key == 'date'){
                 infoRow.append($('<td>').append(Date(errorInfo[key])));
             }
             

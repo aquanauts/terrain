@@ -84,10 +84,10 @@ function makeSessionHistoryReadable(sessionHistoryRaw){
 
 function recordError(errorEvent) {
     var today = new Date();
-    var date = today.getTime(); //store as integer timestamp, can display with Date constructor   
+    var dateTime = today.getTime(); //store as integer timestamp, can display with Date constructor   
     
     console.log("An error was found!");
-    console.log(Date(date));
+    console.log(Date(dateTime));
     console.log(arguments);
     console.log("Session: " + sessionStorage.getItem('sessionID'));
     
@@ -113,7 +113,7 @@ function recordError(errorEvent) {
         platform: extractPlatformInfo(window.navigator.userAgent),
         cookiesEnabled: window.navigator.cookieEnabled,
         visibility: document.visibilityState,
-        date: date,
+        dateTime: dateTime,
         sessionHistory: sessionStorage.getItem('history') // comma separated list
     };
     

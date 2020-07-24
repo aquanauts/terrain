@@ -34,7 +34,7 @@ describe('Client Library', function () {
         
         spyOn(window, 'postTerrainError');
         
-        const date = dateConstructor.getTime(); //Must be called right before recordError (timestamp)
+        const dateTime = dateConstructor.getTime(); //Must be called right before recordError (timestamp)
         recordError(errorEvent);
         
         const expectedPostBody = {
@@ -56,7 +56,7 @@ describe('Client Library', function () {
             browserVersion: browserVersion,
             platform: platform,
             cookiesEnabled: cookiesEnabled,
-            date: date,
+            dateTime: dateTime,
             sessionHistory: sessionStorage.getItem('history'),
             visibility: document.visibilityState
         };

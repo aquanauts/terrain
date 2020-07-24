@@ -17,17 +17,25 @@ const keysAndHeadings = {
     "platform":"OS Platform",
     "cookiesEnabled":"Cookies Enabled",
     "visibility":"Visibility",
-    "date":"Date and Time",
+    "dateTime":"Date and Time",
     "sessionHistory":"Session History"
 };
 
+const selectKeysAndHeadings = {
+    "sessionHistory":"Session History",
+    "errorStack":"Error Stack",
+    "id":"Log Entry No.",
+    "dateTime":"Date and Time",    
+};
+
 const keyArray = Object.keys(keysAndHeadings);
+const selectKeyArray = Object.keys(selectKeysAndHeadings);
 
 function addPageTitle(view, sessionID) {
         const heading = view.find('h1');
         $(heading).text(`Session ${sessionID.toString()} Error Details`);
         const message = view.find('p');
-        $(message).text("uncheck the boxes to hide columns.");
+       // $(message).text("uncheck the boxes to hide columns.");
 };
 
 function addColumnHeadings(tableHeader){
@@ -64,7 +72,18 @@ function addHideColumnsCheckboxes(view){ //TODO Test
     };
 };
 
-export default function(sessionID){
+function addSelectColumnHeadings(tableHeader){
+    const headingRow = $('<tr>');
+        $('<th>').text("No.").appendTo(headingRow);
+        for(var key in selectKeysAndHeadings){
+            var columnHeading = selectKeysAndHeadings[key];
+            $('<th>').text(columnHeading).appendTo(headingRow);
+        };
+        
+        headingRow.appendTo(tableHeader);
+};
+
+function oldDefault(sessionID){
     let view = template('sessionInfoView');
     const table = view.find('#sessionInfoTable');
     const tableHeader = $('<thead>').appendTo(table);
@@ -104,4 +123,99 @@ export default function(sessionID){
     return view;
 }
 
+function getAllErrorsHere(historyLengthPerError, historyEntryNo){
+    var indices = [], i;
+    for(i=0; i<historyLengthPerError.length; i++){
+        if(historyLengthPerError[i] == historyEntryNo){
+            indices.push(i)
+        }
+    }
+    return indices
+};
+
+export default function(sessionID){
+    let view = template('sessionInfoView');
+    const table = view.find('#sessionInfoTable');
+    const tableHeader = $('<thead>').appendTo(table);
+    const tableBody = $('<tbody>').appendTo(table);
+
+    $.get("/get_session?sessionID=" + sessionID).then((errorArray) => {  
+        
+        addPageTitle(view, sessionID);
+        addSelectColumnHeadings(tableHeader);
+        const numErrors = errorArray.length;
+        const mostRecentError =  errorArray[numErrors-1];
+        const fullSessionHistory = mostRecentError["sessionHistory"];
+        
+
+        let historyArray;
+        let singleHistoryArray;
+        let historyLengthsPerError = [];
+
+        if(fullSessionHistory.search('\n\n') != -1){
+            historyArray = fullSessionHistory.split('\n\n');
+        }
+        else {
+            historyArray = fullSessionHistory.split(',');
+        };
+        console.log(errorArray);
+        
+        for (var entry in errorArray) {
+            const singleHistoryString = errorArray[entry]["sessionHistory"];
+            if(singleHistoryString.search('\n\n') != -1){
+                singleHistoryArray = singleHistoryString.split('\n\n');
+            }
+            else {
+                singleHistoryArray = singleHistoryString.split(',');
+            };
+
+            historyLengthsPerError.push(singleHistoryArray.length);
+        }
+        console.log(historyLengthsPerError);
+        
+        
+        for (var i in historyArray){
+            let infoRow = $('<tr>');  
+            if (historyLengthsPerError.includes(Number(i)+1)){ // if there was an error at that URL
+                const errorNums = getAllErrorsHere(historyLengthsPerError, (Number(i)+1));
+                
+                ($(`<td rowspan="${errorNums.length}">`).text(i)).appendTo(infoRow);
+                for(var key in selectKeysAndHeadings){
+                    if(key == "sessionHistory"){
+                        $(`<td rowspan="${errorNums.length}">`).text(historyArray[i]).appendTo(infoRow);
+                     }
+                    else{
+                        const tableCellEntry = ($('<td>').append($('<ol>'))).appendTo(infoRow);
+                        for(var errorNum in errorNums){
+                            console.log(errorNum);
+                            if(key=='date'| key =='dateTime'){
+                                $('<li>').text(Date(errorArray[errorNum][key])).appendTo(tableCellEntry);
+                            }
+                            else {
+                                $('<li>').text(errorArray[errorNum][key]).appendTo(tableCellEntry);
+                            }
+                        }
+                    }
+                };
+            }
             
+            else {
+            
+                ($('<td>').text(i)).appendTo(infoRow);
+                
+                for(var key in selectKeysAndHeadings){
+                    if(key == "sessionHistory"){
+                        infoRow.append($('<td>').text(historyArray[i]))
+                    }
+                    else {
+                        infoRow.append($('<td>'))
+                    } // Empty because no error
+                };
+            }
+            tableBody.append(infoRow);
+        };
+        table.bootstrapTable();
+    });
+    return view;
+}
+    

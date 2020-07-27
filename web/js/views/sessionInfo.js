@@ -35,7 +35,6 @@ function addPageTitle(view, sessionID) {
         const heading = view.find('h1');
         $(heading).text(`Session ${sessionID.toString()} Error Details`);
         const message = view.find('p');
-       // $(message).text("uncheck the boxes to hide columns.");
 };
 
 
@@ -139,12 +138,11 @@ export default function(sessionID){
                     ($('<td>').append(logLink)).appendTo(row);
                 
                     if('date' in errorArray[errorNum]){
-                        ($('<td>').append(Date(errorArray[errorNum]['date']))).appendTo(row);
+                        ($('<td>').append(new Date(errorArray[errorNum]['date']))).appendTo(row);
                     }
 
                     else if('dateTime' in errorArray[errorNum]){
-                        console.log((errorArray[errorNum]['dateTime']));
-                        ($('<td>').append(Date(errorArray[errorNum]['dateTime']))).appendTo(row);
+                        ($('<td>').append(new Date(errorArray[errorNum]['dateTime']))).appendTo(row);
                     }
                 
                             

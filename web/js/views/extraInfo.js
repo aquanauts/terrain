@@ -59,7 +59,7 @@ export default function(no) {
             }
 
             else if(key == 'dateTime' | key == 'date'){
-                infoRow.append($('<td>').append(Date(errorInfo[key])));
+                infoRow.append($('<td>').append(new Date(errorInfo[key])));
             }
             
             else if(key =='url'){

@@ -94,7 +94,7 @@ function recordError(errorEvent) {
     var browserInfo = extractBrowserInfo(window.navigator.userAgent);
     
     var translatedErrorEvent = {
-        session: window.__terrainSessionID.toString(),
+        session: sessionStorage.getItem('sessionID').toString(),
         errorEventMessage: errorEvent.message.split(': ')[0],
         errorName: errorEvent.error.toString().split(': ')[0],
         errorMessage: errorEvent.error.toString().split(': ')[1],

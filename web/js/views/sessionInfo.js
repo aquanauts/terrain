@@ -38,43 +38,10 @@ function addPageTitle(view, sessionID) {
        // $(message).text("uncheck the boxes to hide columns.");
 };
 
-function addColumnHeadings(tableHeader){
-        const headingRow = $('<tr>')
-        headingRow.append($('<th>').text("No."));
-
-        for(var key in keysAndHeadings){
-            var columnHeading = keysAndHeadings[key];
-            $(`<th class=toggle-${key}>`).text(columnHeading).appendTo(headingRow);
-        };
-        
-        headingRow.appendTo(tableHeader);
-        
-};
-
-function addHideColumnsCheckboxes(view){ //TODO Test
-    const formContainer = view.find('.sessionInfoHide');
-
-    for(var key in keysAndHeadings) {
-        const formCheckDiv = $('<div class="form-check form-check-inline">');
-        const input = $('<input class="form-check-input" type="checkbox" checked>');
-        const label = $('<label class="form-check-label">');
-
-        input.attr('id', key);
-        const className = "toggle-" + key.toString();
-        input.click(() => {  
-            $('#sessionInfoTable').find(`.${className}`).fadeToggle("hide");
-        });
-        label.attr('for', key);
-        formCheckDiv.append(input);
-        formCheckDiv.append(label.text(keysAndHeadings[key]));
-
-        formContainer.append(formCheckDiv);
-    };
-};
 
 function addSelectColumnHeadings(tableHeader){
     const headingRow = $('<tr>');
-        $('<th>').text("No.").appendTo(headingRow);
+        $('<th data-sortable="true">').text("No.").appendTo(headingRow);
         for(var key in selectKeysAndHeadings){
             var columnHeading = selectKeysAndHeadings[key];
             $('<th>').text(columnHeading).appendTo(headingRow);
@@ -82,46 +49,6 @@ function addSelectColumnHeadings(tableHeader){
         
         headingRow.appendTo(tableHeader);
 };
-
-function oldDefault(sessionID){
-    let view = template('sessionInfoView');
-    const table = view.find('#sessionInfoTable');
-    const tableHeader = $('<thead>').appendTo(table);
-    const tableBody = $('<tbody>').appendTo(table);
-
-    $.get("/get_session?sessionID=" + sessionID).then((errorArray) => {  
-        
-        addPageTitle(view, sessionID);
-        addColumnHeadings(tableHeader);
-        
-        
-        for (var entry in errorArray) {
-            const infoRow = $('<tr>');
-            $('<td>').text(entry.toString()).appendTo(infoRow);
-            for(var key in keysAndHeadings){
-                if(key == 'date'){
-                    $(`<td class="toggle-${key}">`).text(Date(errorArray[entry][key])).
-                        appendTo(infoRow);
-                }
-            
-                else if((key == 'errorName')|(key == 'errorEventMessage')|(key == 'errorMessage')|( key == 'errorStack')){
-                    console.log(key);
-                    $(`<td class="toggle-${key}">`).append($('<pre>').append($('<code>').append($('<p>').text(errorArray[entry][key])))).appendTo(infoRow); //TODO refactor, renderer fn
-                }
-                else {
-                    $(`<td class="toggle-${key}">`).text(errorArray[entry][key]).appendTo(infoRow);
-                }
-            };
-
-            tableBody.append(infoRow);
-        };
-    table.bootstrapTable();
-    });
-      
-    addHideColumnsCheckboxes(view);
-    
-    return view;
-}
 
 function getAllErrorsHere(historyLengthPerError, historyEntryNo){
     var indices = [], i;
@@ -186,38 +113,48 @@ export default function(sessionID){
             if (historyLengthsPerError.includes(Number(i)+1)){ // if there was an error at that URL
                 const errorNums = getAllErrorsHere(historyLengthsPerError, (Number(i)+1));
                 
-                ($(`<td rowspan="${errorNums.length}">`).text(i)).appendTo(infoRow);
-                for(var key in selectKeysAndHeadings){
-                    if(key == "sessionHistory"){
-                        const urlLink = renderURL(historyArray[i], historyArray[i]);
-                        $(`<td rowspan="${errorNums.length}">`).append(urlLink).appendTo(infoRow);
-                     }
-                    else{
-                        const tableCellEntry = ($('<td>').append($('<ol>'))).appendTo(infoRow);
-                        for(var errorNum in errorNums){
-                            console.log(errorNum);
-                            if(key=='date'| key =='dateTime'){
-                                $('<li>').text(Date(errorArray[errorNum][key])).appendTo(tableCellEntry);
-                            }
-                            else if(key=='id'){
-                                const id = errorArray[errorNum][key];
-                                const logLink = renderURL(`#extraInfo-${id}`, id);
-                                
-                                const infoText =$('<li>').append(logLink);
-                                infoText.appendTo(tableCellEntry);
-                            }
-                            else {
-                                const infoText =$('<li>').text(errorArray[errorNum][key]);
-                                const fixedWidthFormat = $('<pre>').append($('<code>').append(infoText));
-                                fixedWidthFormat.appendTo(tableCellEntry);
-                            }
-                        }
+                ($(`<td rowspan="${errorNums.length}">`).text(Number(i))).appendTo(infoRow); //no.
+                
+                const urlLink = renderURL(historyArray[i], historyArray[i]);
+                $(`<td rowspan="${errorNums.length}">`).append(urlLink).appendTo(infoRow); //history url
+                
+                let row;
+                
+                for(var errorNum in errorNums){
+
+                    if(errorNum == 0){
+                        row = infoRow.appendTo(tableBody);
                     }
-                };
+                    
+                    else {
+                        row  = $('<tr>').appendTo(tableBody);
+                    };
+
+                    const infoText = errorArray[errorNum]['errorStack'];
+                    const fixedWidthFormat = $('<pre>').append($('<code>').append(infoText));
+                    ($('<td>').append(fixedWidthFormat)).appendTo(row);
+                
+                    const id = errorArray[errorNum]['id']; //log link
+                    const logLink = renderURL(`#extraInfo-${id}`, id);        
+                    ($('<td>').append(logLink)).appendTo(row);
+                
+                    if('date' in errorArray[errorNum]){
+                        ($('<td>').append(Date(errorArray[errorNum]['date']))).appendTo(row);
+                    }
+
+                    else if('dateTime' in errorArray[errorNum]){
+                        console.log((errorArray[errorNum]['dateTime']));
+                        ($('<td>').append(Date(errorArray[errorNum]['dateTime']))).appendTo(row);
+                    }
+                
+                            
+                
+                }
             }
             
-            else {
             
+            else {
+                infoRow.appendTo(tableBody);
                 ($('<td>').text(i)).appendTo(infoRow);
                 
                 for(var key in selectKeysAndHeadings){
@@ -230,7 +167,6 @@ export default function(sessionID){
                     } // Empty because no error
                 };
             }
-            tableBody.append(infoRow);
         };
         table.bootstrapTable();
     });

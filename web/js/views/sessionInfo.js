@@ -133,6 +133,13 @@ function getAllErrorsHere(historyLengthPerError, historyEntryNo){
     return indices
 };
 
+function renderURL(href, linkName){
+    const renderedURL = $('<a>');
+    renderedURL.attr('href', href);
+    renderedURL.text(linkName);
+    return renderedURL;
+};
+
 export default function(sessionID){
     let view = template('sessionInfoView');
     const table = view.find('#sessionInfoTable');
@@ -182,7 +189,8 @@ export default function(sessionID){
                 ($(`<td rowspan="${errorNums.length}">`).text(i)).appendTo(infoRow);
                 for(var key in selectKeysAndHeadings){
                     if(key == "sessionHistory"){
-                        $(`<td rowspan="${errorNums.length}">`).text(historyArray[i]).appendTo(infoRow);
+                        const urlLink = renderURL(historyArray[i], historyArray[i]);
+                        $(`<td rowspan="${errorNums.length}">`).append(urlLink).appendTo(infoRow);
                      }
                     else{
                         const tableCellEntry = ($('<td>').append($('<ol>'))).appendTo(infoRow);
@@ -191,8 +199,17 @@ export default function(sessionID){
                             if(key=='date'| key =='dateTime'){
                                 $('<li>').text(Date(errorArray[errorNum][key])).appendTo(tableCellEntry);
                             }
+                            else if(key=='id'){
+                                const id = errorArray[errorNum][key];
+                                const logLink = renderURL(`#extraInfo-${id}`, id);
+                                
+                                const infoText =$('<li>').append(logLink);
+                                infoText.appendTo(tableCellEntry);
+                            }
                             else {
-                                $('<li>').text(errorArray[errorNum][key]).appendTo(tableCellEntry);
+                                const infoText =$('<li>').text(errorArray[errorNum][key]);
+                                const fixedWidthFormat = $('<pre>').append($('<code>').append(infoText));
+                                fixedWidthFormat.appendTo(tableCellEntry);
                             }
                         }
                     }
@@ -205,7 +222,8 @@ export default function(sessionID){
                 
                 for(var key in selectKeysAndHeadings){
                     if(key == "sessionHistory"){
-                        infoRow.append($('<td>').text(historyArray[i]))
+                        const urlLink = renderURL(historyArray[i], historyArray[i]);
+                        infoRow.append($('<td>').append(urlLink));
                     }
                     else {
                         infoRow.append($('<td>'))

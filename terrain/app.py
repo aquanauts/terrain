@@ -1,5 +1,5 @@
 import json
-# from slimit import minify
+from jsmin import jsmin
 from aiohttp import web
 from terrain.exception_log import ExceptionLog
 from terrain.session_id_store import SessionIDStore
@@ -46,8 +46,8 @@ class Terrain:
             content = library_file.read()
         new_id = self.session_id_store.generate_new_id()
         library_with_id = content.replace('"replace with actual session id"', str(new_id), 1)
-        # minified_library_with_id = minify(str(library_with_id), mangle=True, mangle_toplevel=True)
-        return web.Response(body=library_with_id, content_type='application/javascript')
+        minified_library_with_id = jsmin(library_with_id, quote_chars="'\"`")
+        return web.Response(body=minified_library_with_id, content_type='application/javascript')
 
 async def on_prepare(_, response):
     response.headers['cache-control'] = 'no-cache'

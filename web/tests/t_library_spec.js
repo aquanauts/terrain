@@ -30,7 +30,8 @@ describe('Client Library', function () {
         const browserVersion =  browserInfo["version"];
         const platform = extractPlatformInfo(window.navigator.userAgent);
         const cookiesEnabled = window.navigator.cookieEnabled;
-        const dateConstructor = new Date();
+        const dateConstructor = new Date(2020, 1, 1);
+        spyOn(window, 'Date').and.callFake(() => dateConstructor);
         
         spyOn(window, 'postTerrainError');
         

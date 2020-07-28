@@ -1,7 +1,7 @@
 from unittest import mock
 import json
 import pytest
-import jsbeautifier
+#import jsbeautifier
 from terrain.app import create_app
 
 @pytest.fixture(name='exception_log')
@@ -74,7 +74,7 @@ async def test_webapp_generates_library_with_session_id(aiohttp_client, webapp, 
     assert resp.status == 200
     session_id_store.generate_new_id.assert_called()
     body = await resp.text()
-    assert "window.__terrainSessionID = 42;" in jsbeautifier.beautify(body)
+    assert "window.__terrainSessionID = 42;" in body
 
 async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)

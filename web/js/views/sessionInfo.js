@@ -104,9 +104,8 @@ export default function(sessionID){
 
             historyLengthsPerError.push(singleHistoryArray.length);
         }
-        console.log(historyLengthsPerError);
-        
-        
+        //console.log(historyLengthsPerError);
+        var errorNumCounter = 0;
         for (var i in historyArray){
             let infoRow = $('<tr>');  
             if (historyLengthsPerError.includes(Number(i)+1)){ // if there was an error at that URL
@@ -129,23 +128,23 @@ export default function(sessionID){
                         row  = $('<tr>').appendTo(tableBody);
                     };
 
-                    const infoText = errorArray[errorNum]['errorStack'];
+                    const infoText = errorArray[errorNumCounter]['errorStack'];
                     const fixedWidthFormat = $('<pre>').append($('<code>').append(infoText));
                     ($('<td>').append(fixedWidthFormat)).appendTo(row);
                 
-                    const id = errorArray[errorNum]['id']; //log link
+                    const id = errorArray[errorNumCounter]['id']; //log link
                     const logLink = renderURL(`#extraInfo-${id}`, id);        
                     ($('<td>').append(logLink)).appendTo(row);
                 
-                    if('date' in errorArray[errorNum]){
-                        ($('<td>').append(new Date(errorArray[errorNum]['date']))).appendTo(row);
+                    if('date' in errorArray[errorNumCounter]){
+                        ($('<td>').append(new Date(errorArray[errorNumCounter]['date']))).appendTo(row);
                     }
 
                     else if('dateTime' in errorArray[errorNum]){
-                        ($('<td>').append(new Date(errorArray[errorNum]['dateTime']))).appendTo(row);
+                        ($('<td>').append(new Date(errorArray[errorNumCounter]['dateTime']))).appendTo(row);
                     }
                 
-                            
+                    errorNumCounter++;            
                 
                 }
             }

@@ -17,7 +17,7 @@ export function generateErrorTable(data, view){ //data is a string of json objec
           
           
           if(errorArray.length > 0) { 
-                console.log(errorArray.length);
+                //console.log(errorArray.length);
                 const latest = errorArray.length - 2;
                 const tableBody = $("<tbody>");
                 var endPoint = latest - 200;

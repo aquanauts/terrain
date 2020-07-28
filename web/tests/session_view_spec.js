@@ -57,4 +57,18 @@ describe('Session Info View', () => {
     
     });
 
+    it('Displays error stack in fixed-width font', async() => {
+        let errorInfo = [{"sessionID":"1", "sessionHistory":"url1", "id":"100", "errorStack":"An error stack", "dateTime":"0"}, {"sessionID":"1", "sessionHistory":"url1", "id":"101", "errorStack":"Another error stack", "dateTime":"1"}];
+        errorInfoDeferred.resolve(errorInfo);
+        expect(view.find('pre:first').text()).toEqual("An error stack");
+        expect(view.find('pre:last').text()).toEqual("Another error stack");
+    });
+    
+    it('Has a search bar', async () => {
+        let errorInfo = [{"sessionID":"1", "sessionHistory":"url1", "id":"100", "errorStack":"An error stack", "dateTime":"0"}, {"sessionID":"1", "sessionHistory":"url1", "id":"101", "errorStack":"Another error stack", "dateTime":"1"}];
+        errorInfoDeferred.resolve(errorInfo);
+        const searchBar = view.find('input');
+        expect(searchBar.prop('placeholder')).toEqual("Search");
+    });
+
 });

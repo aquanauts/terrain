@@ -1,20 +1,27 @@
-describe('Client Library', function () {
+describe('Client Library', function () {   
+
+    it('Extracts browser name and version from user agent string', async function () {
+        const userAgentString = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
+        var browserInfo = extractBrowserInfoForTerrain(userAgentString);
+        expect(browserInfo["name"]).toEqual("Chrome");
+        expect(browserInfo["version"]).toEqual("83");
+    });
     
-    it('has integer sessionID', async function () {
-        const receivedID = window.__terrainSessionID;
-        expect(receivedID).toEqual(jasmine.any(Number));
+    it('Extracts platform information from user agent string', async function() {   
+        const userAgentString = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36";
+        var platformInfo = extractPlatformInfoForTerrain(userAgentString);
+        expect(platformInfo).toEqual("Macintosh; Intel Mac OS X 10_15_4"); 
     });
 
 
-
-    it('can handle error events', function () {
+    it('Can handle error events', function () {
         const errorEvent = new ErrorEvent("", {
                 error: new Error("Error name"),
                 message: "Error message",
             }
         );
         
-        var browserInfo = extractBrowserInfo(window.navigator.userAgent);
+        var browserInfo = extractBrowserInfoForTerrain(window.navigator.userAgent);
          
         const errorStack = errorEvent.error.stack;
         const url =  window.location["href"];
@@ -28,7 +35,7 @@ describe('Client Library', function () {
         const logicalProcessors =  window.navigator.hardwareConcurrency;
         const browser = browserInfo["name"];
         const browserVersion =  browserInfo["version"];
-        const platform = extractPlatformInfo(window.navigator.userAgent);
+        const platform = extractPlatformInfoForTerrain(window.navigator.userAgent);
         const cookiesEnabled = window.navigator.cookieEnabled;
         const dateConstructor = new Date(2020, 1, 1);
         spyOn(window, 'Date').and.callFake(() => dateConstructor);
@@ -36,7 +43,7 @@ describe('Client Library', function () {
         spyOn(window, 'postTerrainError');
         
         const dateTime = dateConstructor.getTime(); //Must be called right before recordError (timestamp)
-        recordError(errorEvent);
+        recordTerrainError(errorEvent);
         
         const expectedPostBody = {
             session: sessionStorage.getItem("sessionID").toString(),
@@ -65,7 +72,7 @@ describe('Client Library', function () {
         expect(postTerrainError).toHaveBeenCalledWith(expectedPostBody);
     });
 
-    it('posts errors back to server', async () => {
+    it('Posts errors back to server', async () => {
         
         spyOn(window, 'fetch');
         const postBody = {"someProperty": true};

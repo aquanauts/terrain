@@ -40,7 +40,7 @@ function addPageTitle(view, sessionID) {
 
 function addSelectColumnHeadings(tableHeader){
     const headingRow = $('<tr>');
-        $('<th data-sortable="true">').text("No.").appendTo(headingRow);
+        $('<th>').text("No.").appendTo(headingRow);
         for(var key in selectKeysAndHeadings){
             var columnHeading = selectKeysAndHeadings[key];
             $('<th>').text(columnHeading).appendTo(headingRow);

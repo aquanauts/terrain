@@ -93,7 +93,7 @@ export default function(no) {
             
             tableBody.append(infoRow);
          }
-   table.bootstrapTable();    
+    //table.bootstrapTable();
     });
 
     return view;

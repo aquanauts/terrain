@@ -9,9 +9,9 @@ export function generateErrorTable(data, view){ //data is a string of json objec
 
           $(headingRow).append($('<th data-sortable="true">').text("No."));
           $(headingRow).append($('<th data-sortable="true">').text("Session ID"));
-          $(headingRow).append($('<th data-sortable="true">').text("Error Event Message"));
-          $(headingRow).append($('<th data-sortable="true">').text("Error Message"));
-          $(headingRow).append($('<th data-sortable="true">').text("URL"));
+          $(headingRow).append($('<th>').text("Error Event Message"));
+          $(headingRow).append($('<th>').text("Error Message"));
+          $(headingRow).append($('<th>').text("URL"));
         
           $(table).append(tableHeader);
           

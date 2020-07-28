@@ -38,7 +38,7 @@ describe('Client Library', function () {
         recordError(errorEvent);
         
         const expectedPostBody = {
-            session: window.__terrainSessionID.toString(),
+            session: sessionStorage.getItem("sessionID").toString(),
             errorEventMessage: "Error message",
             errorName: "Error",
             errorMessage: "Error name",

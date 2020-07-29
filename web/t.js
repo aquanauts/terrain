@@ -88,12 +88,11 @@ function extractPlatformInfoForTerrain(userAgent){ //https://developers.whatismy
 };
 
 
-
 function recordTerrainError(errorEvent) {
-    console.log(errorEvent);
+    //console.log(errorEvent);
     var today = new Date();
     var dateTime = today.getTime(); //store as integer timestamp, can display with Date constructor   
-    
+
     var browserInfo = extractBrowserInfoForTerrain(window.navigator.userAgent);
     
     var translatedErrorEvent = {

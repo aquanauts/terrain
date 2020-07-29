@@ -17,8 +17,23 @@ window.addEventListener('load', function() {
 
     sessionHistory.push(window.location["href"]+"");
     sessionStorage.setItem('history', sessionHistory);
-
+        
+    const allScripts = document.querySelectorAll('script');
+    terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
+    
 });
+
+
+function findTerrainLibrarySource(scriptNodeList){
+    let librarySource;
+    for(node in scriptNodeList){
+        if (scriptNodeList[node]["src"].includes("/t.js")){
+            librarySource = scriptNodeList[node]["src"].replace("/t.js",""); 
+            break;
+        };
+    }
+    return librarySource
+};
 
 window.addEventListener('hashchange', function() { 
     sessionHistory.push(window.location["href"]);
@@ -28,7 +43,7 @@ window.addEventListener('hashchange', function() {
 
 async function postTerrainError(errorInfo) {
 
-    const rawResponse = await fetch('/receive_error', {
+    const rawResponse = await fetch(terrainLibrarySource+'/receive_error', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -38,7 +53,6 @@ async function postTerrainError(errorInfo) {
     });
 
 };
-
 
 
 // https://stackoverflow.com/questions/5916900/how-can-you-detect-the-version-of-a-browser

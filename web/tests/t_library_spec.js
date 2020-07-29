@@ -72,14 +72,13 @@ describe('Client Library', function () {
         expect(postTerrainError).toHaveBeenCalledWith(expectedPostBody);
     });
 
-    it('Posts errors back to server', async () => {
-        
+    it('Posts errors back to server', async () => {    
         spyOn(window, 'fetch');
         const postBody = {"someProperty": true};
         postTerrainError(postBody);
 
         expect(fetch).toHaveBeenCalledWith(
-            '/receive_error', {
+            terrainLibrarySource + '/receive_error', {
              method: 'POST',
              headers: {
                 'Accept': 'application/json',
@@ -90,7 +89,10 @@ describe('Client Library', function () {
         );
     });
 
-
-
+    it('Extracts URL of host from library source', async() => {
+        const fakeNodeList = [{"src":"someFakeName/fakeLibrary.js"},{"src":"fakeLibrarySource/t.js"}]
+        const fakeSource = findTerrainLibrarySource(fakeNodeList);       
+        expect(fakeSource).toEqual('fakeLibrarySource');
+    });
     
 });

@@ -91,7 +91,7 @@ export default function(sessionID){
         else {
             historyArray = fullSessionHistory.split(',');
         };
-        console.log(errorArray);
+        //console.log(errorArray);
         
         for (var entry in errorArray) {
             const singleHistoryString = errorArray[entry]["sessionHistory"];

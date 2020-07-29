@@ -84,7 +84,8 @@ describe('Client Library', function () {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
                  },
-             body: JSON.stringify(postBody)
+             body: JSON.stringify(postBody),
+             mode: "no-cors"
              }
         );
     });

@@ -49,7 +49,8 @@ async function postTerrainError(errorInfo) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
             },
-        body: JSON.stringify(errorInfo)
+        body: JSON.stringify(errorInfo),
+        mode: "no-cors"
     });
 
 };

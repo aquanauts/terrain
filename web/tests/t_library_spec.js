@@ -78,7 +78,7 @@ describe('Client Library', function () {
         postTerrainError(postBody);
 
         expect(fetch).toHaveBeenCalledWith(
-            terrainLibrarySource + '/receive_error', {
+             window.__terrainLibrarySource + '/receive_error', {
              method: 'POST',
              headers: {
                 'Accept': 'application/json',

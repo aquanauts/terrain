@@ -11,22 +11,26 @@
     <script type="text/javascript">
       function rangeError() {  
           throw new RangeError('Example created range error', 'non_existent.js', 1);
-          recordError(error);
+          recordTerrainError(error);
+      }
+      function rangeError() {  
+          throw new RangeError('Example created range error', 'non_existent.js', 1);
+          recordTerrainError(error);
       }
 
       function referenceError() {
           throw new ReferenceError('Example created reference error', 'non_existent.js', 1);
-          recordError(error);
+          recordTerrainError(error);
       }
 
       function typeError() {
           throw new TypeError('Example created type error', 'non_existent.js', 1);
-          recordError(error);
+          recordTerrainError(error);
       }
 
       function uriError() {
           throw new URIError('Example created URI error', 'non_existent.js', 1);
-          recordError(error);
+          recordTerrainError(error);
       }
           
       function syntaxError() {

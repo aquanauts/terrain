@@ -5,7 +5,8 @@
 // to avoid collisions in host applications
 
 window.__terrainSessionID = "replace with actual session id";
-
+const allScripts = document.querySelectorAll('script');
+window.__terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
 var sessionHistory = [];
 
 window.addEventListener('load', function() { 
@@ -19,8 +20,6 @@ window.addEventListener('load', function() {
     sessionHistory.push(window.location["href"]+"");
     sessionStorage.setItem('history', sessionHistory);
         
-    const allScripts = document.querySelectorAll('script');
-    window.__terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
     
 });
 
@@ -44,7 +43,7 @@ window.addEventListener('hashchange', function() {
 
 async function postTerrainError(errorInfo) {
 
-    const rawResponse = await fetch(window.__terrainLibrarySource+'/receive_error', {
+    const rawResponse = await fetch(window.__terrainLibrarySource+"/receive_error", {
         method: 'POST',
         headers: {
             'Accept': 'application/json',

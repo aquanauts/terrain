@@ -90,6 +90,7 @@ function extractPlatformInfoForTerrain(userAgent){ //https://developers.whatismy
 
 
 function recordTerrainError(errorEvent) {
+    console.log(errorEvent);
     var today = new Date();
     var dateTime = today.getTime(); //store as integer timestamp, can display with Date constructor   
     
@@ -98,8 +99,8 @@ function recordTerrainError(errorEvent) {
     var translatedErrorEvent = {
         session: sessionStorage.getItem('sessionID').toString(),
         errorEventMessage: errorEvent.message.split(': ')[0],
-        errorName: errorEvent.error.toString().split(': ')[0],
-        errorMessage: errorEvent.error.toString().split(': ')[1],
+        errorName: errorEvent.error.stack.split(': ')[0],
+        errorMessage: errorEvent.error.message,
         errorStack: errorEvent.error.stack,
         url: window.location["href"],
         host: window.location["host"],

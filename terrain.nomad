@@ -10,7 +10,7 @@ job "terrain" {
                 port_map {
                     http = 8080
                 }
-                volumes = ["terrain:/app/data"]
+                volumes = ["terrain:/root/terrain/data"]
                 volume_driver = "pure"
                 logging {
                     type = "journald"

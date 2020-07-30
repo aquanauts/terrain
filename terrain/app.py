@@ -53,7 +53,11 @@ class Terrain:
 async def on_prepare(_, response):
     response.headers['cache-control'] = 'no-cache'
 
-def create_app(exception_log=ExceptionLog(), session_id_store=SessionIDStore()):
+def create_app(exception_log=None, session_id_store=None):
+    if exception_log is None:
+        exception_log = ExceptionLog()
+    if session_id_store is None:
+        session_id_store = SessionIDStore()
     app = web.Application()
     app.on_response_prepare.append(on_prepare)
     app.terrain_service = Terrain(exception_log, session_id_store)

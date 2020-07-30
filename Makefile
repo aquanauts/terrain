@@ -78,7 +78,7 @@ docker: $(DOCKER)
 
 docker-run: docker ## Run in docker
 	mkdir -p $(CURDIR)/data
-	docker run --rm -it -p 8080:8080 -v $(CURDIR)/data:/root/data $(DOCKER_IMAGE):$(VERSION)
+	docker run --rm -it -p 8080:8080 -v $(CURDIR)/data:/root/terrain/data $(DOCKER_IMAGE):latest
 
 .PHONY: release
 release: test docker  ## Build a new docker image and deploy to nomad

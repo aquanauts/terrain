@@ -1,46 +1,46 @@
 from unittest import mock
+import pathlib
+import pytest
 from terrain.exception_log import ExceptionLog
 
-def test_writes_to_a_file():
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        log = ExceptionLog()
-        log.write("something")
-        mock_fn.assert_called_with("data/exceptions.txt", "a")
+@pytest.fixture(name="mock_path")
+def mock_path_fixture():
+    mock_path = mock.MagicMock(spec=pathlib.Path)
+    mock_path.open = mock.mock_open()
+    return mock_path
 
 
-def test_writes_actual_content():
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        log = ExceptionLog()
-        log.write("something")
-        handle = mock_fn()
-        handle.write.assert_called_once_with("something\n")
+@pytest.fixture(name='exception_log')
+def exception_log_fixture(mock_path):
+    return ExceptionLog(mock_path)
 
 
-def test_reads_from_a_file():
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        log = ExceptionLog()
-        log.read()
-        mock_fn.assert_called_with("data/exceptions.txt", "r")
+def test_touches_file_on_creation(mock_path):
+    ExceptionLog(mock_path)
+    mock_path.touch.assert_called_with(exist_ok=True)
 
-def test_reads_entry_from_a_file():
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        mock_fn.return_value.readlines.return_value = ['{"line":1}', '{"line":2}']
-        log = ExceptionLog()
-        assert log.read_entry(entry_id=0) == {"line": 1}
-        mock_fn.assert_called_with("data/exceptions.txt", "r")
 
-def test_reads_correct_content():
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        log = ExceptionLog()
-        log.write("something")
-        log.write("something else")
-        mock_fn.return_value.read.return_value = "something\nsomething_else\n"
-        assert log.read() == "something\nsomething_else\n"
-        # https://stackoverflow.com/questions/18191275/using-pythons-mock-patch-object-to-change-the-return-value-of-a-method-called-w
+def test_opens_the_file_in_append_mode(exception_log, mock_path):
+    exception_log.write('something')
+    mock_path.open.assert_called_with(mode='a')
 
-def test_reads_session_entries_from_a_file(): # key must be identical to actual key used
-    with mock.patch('builtins.open', mock.mock_open()) as mock_fn:
-        mock_fn.return_value.readlines.return_value = ['{"session":11}', '{"session":7}', '{"session":7}']
-        log = ExceptionLog()
-        assert log.find_session(session_id=7) == [{"session": 7, "id": 1}, {"session": 7, "id": 2}]
-        mock_fn.assert_called_with("data/exceptions.txt", "r")
+
+def test_writes_records_with_newlines(exception_log, mock_path):
+    exception_log.write('something')
+    mock_path.open.return_value.write.assert_called_with('something\n')
+
+
+def test_reads_from_a_file(exception_log, mock_path):
+    mock_path.read_text.return_value = "content"
+    assert exception_log.read() == "content"
+
+
+def test_reads_entry_from_a_file(exception_log, mock_path):
+    mock_path.read_text.return_value = "zero\none\ntwo\n"
+    assert exception_log.read_entry(1) == "one"
+
+
+def test_reads_session_entries_from_a_file(exception_log, mock_path):
+    # key must be identical to actual key used
+    mock_path.read_text.return_value = '{"session":11}\n{"session":7}\n{"session":7}\n'
+    assert exception_log.find_session(session_id=7) == [{"session": 7, "id": 1}, {"session": 7, "id": 2}]

@@ -1,4 +1,5 @@
 import json
+import pathlib
 from jsmin import jsmin
 from aiohttp import web
 from terrain.exception_log import ExceptionLog
@@ -55,7 +56,7 @@ async def on_prepare(_, response):
 
 def create_app(exception_log=None, session_id_store=None):
     if exception_log is None:
-        exception_log = ExceptionLog()
+        exception_log = ExceptionLog(pathlib.Path("data/exceptions.txt"))
     if session_id_store is None:
         session_id_store = SessionIDStore()
     app = web.Application()

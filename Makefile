@@ -80,6 +80,9 @@ docker-run: docker ## Run in docker
 	mkdir -p $(CURDIR)/data
 	docker run --rm -it -p 8080:8080 -v $(CURDIR)/data:/root/terrain/data $(DOCKER_IMAGE):latest
 
+logs: ## Show logs for running job
+	nomad logs --job terrain
+
 .PHONY: release
 release: test docker  ## Build a new docker image and deploy to nomad
 	docker tag $(DOCKER_IMAGE):latest $(DOCKER_IMAGE):$(VERSION)

@@ -2,25 +2,26 @@ import json
 
 class ExceptionLog:
 
+    def __init__(self):
+        self.exception_file = "data/exceptions.txt"
 
     def write(self, content):
-        with open("exceptions.txt", "a") as exceptions:
+        with open(self.exception_file, "a") as exceptions:
             exceptions.write(content + "\n")
 
-
     def read(self):
-        with open("exceptions.txt", "r") as exceptions:
+        with open(self.exception_file, "r") as exceptions:
             content = exceptions.read()
         return content
 
     def read_entry(self, entry_id):
-        with open("exceptions.txt", "r") as exceptions:
+        with open(self.exception_file, "r") as exceptions:
             all_entries = exceptions.readlines()
             entry = json.loads(all_entries[entry_id])
         return entry
 
     def find_session(self, session_id):
-        with open("exceptions.txt", "r") as exceptions:
+        with open(self.exception_file, "r") as exceptions:
             session_entries = []
             all_entries = exceptions.readlines()
             for idx, entry in enumerate(all_entries):
@@ -33,6 +34,6 @@ class ExceptionLog:
             return session_entries
 
     def readlines(self):
-        with open("exceptions.txt", "r") as exceptions:
+        with open(self.exception_file, "r") as exceptions:
             content = exceptions.readlines()
         return content

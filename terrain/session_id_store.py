@@ -2,12 +2,13 @@ import os.path
 
 class SessionIDStore:
     def __init__(self):
+        self.session_file = "data/session_id_store.txt"
         self.current_id = self.read_current_id()
 
     def read_current_id(self) -> int:
-        if os.path.isfile('session_id_store.txt') is not True:
-            open('session_id_store.txt', 'w')
-        with open('session_id_store.txt', 'r+') as session_id_file:
+        if os.path.isfile(self.session_file) is not True:
+            open(self.session_file, 'w')
+        with open(self.session_file, 'r+') as session_id_file:
             current_id = session_id_file.read()
             if current_id == "":
                 session_id_file.write("0")
@@ -16,7 +17,7 @@ class SessionIDStore:
 
     def generate_new_id(self) -> int:
         self.current_id += 1
-        with open('session_id_store.txt', 'w') as session_id_file:
+        with open(self.session_file, 'w') as session_id_file:
             # Write current id
             session_id_file.write(str(self.current_id))
         return self.current_id

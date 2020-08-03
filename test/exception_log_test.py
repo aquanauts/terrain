@@ -37,7 +37,8 @@ def test_reads_from_a_file(exception_log, mock_path):
 
 def test_reads_lines_from_a_file(exception_log, mock_path):
     mock_path.read_text.return_value = '{"session":"zero", "item":"something"}\n{"session":"one", "item":"something"}\n'
-    assert exception_log.readlines() == ['{"session":"zero", "item":"something"}', '{"session":"one", "item":"something"}']
+    assert exception_log.readlines() == ['{"session":"zero", "item":"something"}', \
+            '{"session":"one", "item":"something"}']
 
 def test_reads_entry_from_a_file(exception_log, mock_path):
     mock_path.read_text.return_value = '{"session":"zero", "item":"something"}\n{"session":"one", "item":"something"}\n'

@@ -1,9 +1,6 @@
 // TODO Can we run a linter on this without adding a bunch of silliness to our project
 // Try to avoid jquery here!
 
-// TODO Make these functions more unique, or scope them to a wrapper function
-// to avoid collisions in host applications
-
 window.__terrainSessionID = "replace with actual session id";
 const allScripts = document.querySelectorAll('script');
 window.__terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
@@ -11,7 +8,7 @@ var sessionHistory = [];
 
 window.addEventListener('load', function() { 
     getSetSessionIDFromStorage();
-    if(getSessionHistoryFromStorage != ""){
+    if(getSessionHistoryFromStorage() != ""){
         sessionHistory = getSessionHistoryFromStorage().split(',');
     }
     sessionHistory.push(window.location["href"]+"");
@@ -28,7 +25,7 @@ function getSetSessionIDFromStorage(){
 
 function getSessionHistoryFromStorage(){
     if (sessionStorage.getItem('history') == null){
-        sessionStorage.setItem('history', sessionHistory);
+        return ""
     }
      
     //sessionHistory =  sessionStorage.getItem('history').split(',');

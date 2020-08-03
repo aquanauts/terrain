@@ -10,19 +10,30 @@ window.__terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
 var sessionHistory = [];
 
 window.addEventListener('load', function() { 
+    getSetSessionIDFromStorage();
+    if(getSessionHistoryFromStorage != ""){
+        sessionHistory = getSessionHistoryFromStorage().split(',');
+    }
+    sessionHistory.push(window.location["href"]+"");
+    sessionStorage.setItem('history', sessionHistory);
+            
+});
+
+function getSetSessionIDFromStorage(){
     if (sessionStorage.getItem('sessionID') == null){
         sessionStorage.setItem('sessionID', window.__terrainSessionID);
     }
-    else {
-        sessionHistory = sessionStorage.getItem('history').split(',');
-    } 
+    return sessionStorage.getItem('sessionID');
+};
 
-    sessionHistory.push(window.location["href"]+"");
-    sessionStorage.setItem('history', sessionHistory);
-        
-    
-});
-
+function getSessionHistoryFromStorage(){
+    if (sessionStorage.getItem('history') == null){
+        sessionStorage.setItem('history', sessionHistory);
+    }
+     
+    //sessionHistory =  sessionStorage.getItem('history').split(',');
+    return sessionStorage.getItem('history');
+};
 
 function findTerrainLibrarySource(scriptNodeList){
     let librarySource;
@@ -94,9 +105,13 @@ function recordTerrainError(errorEvent) {
     var dateTime = today.getTime(); //store as integer timestamp, can display with Date constructor   
 
     var browserInfo = extractBrowserInfoForTerrain(window.navigator.userAgent);
-    
+    //Attempting to foolproof the case where error is caught before pageload adds history to an otherwise empty sessionStorage/sessionHistory.
+    //TODO ensure there isn't a case where the current history doesn't get added in time.
+    var assumedHistory = getSessionHistoryFromStorage();
+    if (assumedHistory == "") {assumedHistory = window.location["href"]+","}
+
     var translatedErrorEvent = {
-        session: sessionStorage.getItem('sessionID').toString(),
+        session: getSetSessionIDFromStorage(),
         errorEventMessage: errorEvent.message.split(': ')[0],
         errorName: errorEvent.error.stack.split(': ')[0],
         errorMessage: errorEvent.error.message,
@@ -116,7 +131,7 @@ function recordTerrainError(errorEvent) {
         cookiesEnabled: window.navigator.cookieEnabled,
         visibility: document.visibilityState,
         dateTime: dateTime,
-        sessionHistory: sessionStorage.getItem('history') // comma separated list of strings
+        sessionHistory: getSessionHistoryFromStorage() // comma separated list of strings
     };
     
     postTerrainError(translatedErrorEvent);

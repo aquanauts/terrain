@@ -14,7 +14,8 @@ class ExceptionLog:
         return self.file_path.read_text()
 
     def read_entry(self, entry_id):
-        return self.readlines()[entry_id]
+        all_entries = self.readlines()
+        return json.loads(all_entries[entry_id])
 
     def find_session(self, session_id):
         session_entries = []

@@ -1,4 +1,5 @@
 from unittest import mock
+import json
 import pathlib
 import pytest
 from terrain.exception_log import ExceptionLog
@@ -34,10 +35,13 @@ def test_reads_from_a_file(exception_log, mock_path):
     mock_path.read_text.return_value = "content"
     assert exception_log.read() == "content"
 
+def test_reads_lines_from_a_file(exception_log, mock_path):
+    mock_path.read_text.return_value = '{"session":"zero", "item":"something"}\n{"session":"one", "item":"something"}\n'
+    assert exception_log.readlines() == ['{"session":"zero", "item":"something"}', '{"session":"one", "item":"something"}']
 
 def test_reads_entry_from_a_file(exception_log, mock_path):
-    mock_path.read_text.return_value = "zero\none\ntwo\n"
-    assert exception_log.read_entry(1) == "one"
+    mock_path.read_text.return_value = '{"session":"zero", "item":"something"}\n{"session":"one", "item":"something"}\n'
+    assert exception_log.read_entry(1) == json.loads('{"session":"one", "item":"something"}')
 
 
 def test_reads_session_entries_from_a_file(exception_log, mock_path):

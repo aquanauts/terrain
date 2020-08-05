@@ -59,6 +59,7 @@ body {
 .fixed-table-container .fixed-table-header .fixed-table-body {
   display:none;
 }
+
 td {
   padding:0 15px;
   border-width: 1px 0;

@@ -5,15 +5,17 @@ window.__terrainSessionID = "replace with actual session id";
 const allScripts = document.querySelectorAll('script');
 window.__terrainLibrarySource = findTerrainLibrarySource(allScripts); //global
 var sessionHistory = [];
+var currentURLPushedToHistory = false;
 
 window.addEventListener('load', function() { 
     getSetSessionIDFromStorage();
-    if(getSessionHistoryFromStorage() != ""){
-        sessionHistory = getSessionHistoryFromStorage().split(',');
-    }
-    sessionHistory.push(window.location["href"]+"");
+    getSessionHistoryFromStorage();        
+});
+
+window.addEventListener('hashchange', function() { 
+    sessionHistory.push(window.location["href"]);
     sessionStorage.setItem('history', sessionHistory);
-            
+    // TODO when happens when sessionStorage is full?
 });
 
 function getSetSessionIDFromStorage(){
@@ -24,11 +26,15 @@ function getSetSessionIDFromStorage(){
 };
 
 function getSessionHistoryFromStorage(){
-    if (sessionStorage.getItem('history') == null){
-        return ""
+    if (sessionStorage.getItem('history') != null){
+        sessionHistory = sessionStorage.getItem('history').split(',');
     }
-     
-    //sessionHistory =  sessionStorage.getItem('history').split(',');
+
+    if (currentURLPushedToHistory == false){
+        sessionHistory.push(window.location["href"]+"");
+        sessionStorage.setItem('history', sessionHistory);
+        currentURLPushedToHistory = true;
+    }
     return sessionStorage.getItem('history');
 };
 
@@ -43,11 +49,6 @@ function findTerrainLibrarySource(scriptNodeList){
     return librarySource
 };
 
-window.addEventListener('hashchange', function() { 
-    sessionHistory.push(window.location["href"]);
-    sessionStorage.setItem('history', sessionHistory);
-    // TODO when happens when sessionStorage is full?
-});
 
 async function postTerrainError(errorInfo) {
 
@@ -103,9 +104,6 @@ function recordTerrainError(errorEvent) {
 
     var browserInfo = extractBrowserInfoForTerrain(window.navigator.userAgent);
     //Attempting to foolproof the case where error is caught before pageload adds history to an otherwise empty sessionStorage/sessionHistory.
-    //TODO ensure there isn't a case where the current history doesn't get added in time.
-    var assumedHistory = getSessionHistoryFromStorage();
-    if (assumedHistory == "") {assumedHistory = window.location["href"]+","}
 
     var translatedErrorEvent = {
         session: getSetSessionIDFromStorage(),

@@ -22,7 +22,7 @@ const keysAndHeadings = {
 };
 
 const selectKeysAndHeadings = {
-    "sessionHistory":"Session History",
+    "sessionHistory":"URL in History",
     "errorStack":"Error Stack",
     "id":"Log Entry No.",
     "dateTime":"Date and Time",    
@@ -40,10 +40,15 @@ function addPageTitle(view, sessionID) {
 
 function addSelectColumnHeadings(tableHeader){
     const headingRow = $('<tr>');
-        $('<th>').text("No.").appendTo(headingRow);
+        $('<th data-sortable="true" data-field="no.">').text("No.").appendTo(headingRow);
         for(var key in selectKeysAndHeadings){
             var columnHeading = selectKeysAndHeadings[key];
-            $('<th>').text(columnHeading).appendTo(headingRow);
+            if(key == "errorStack") {    
+                $('<th data-field="stack">').text(columnHeading).appendTo(headingRow);
+            }
+            else {
+                $('<th>').text(columnHeading).appendTo(headingRow);
+            }
         };
         
         headingRow.appendTo(tableHeader);
@@ -65,6 +70,7 @@ function renderURL(href, linkName){
     renderedURL.text(linkName);
     return renderedURL;
 };
+
 
 export default function(sessionID){
     let view = template('sessionInfoView');
@@ -165,7 +171,12 @@ export default function(sessionID){
                 };
             }
         };
-        table.bootstrapTable();
+        //table.bootstrapTable({sortName:"stack", sortOrder:"asc", sortStable:"false"});
+        function reverseOrder(table){
+            var trs = table.children('tr').get().reverse();
+            table.append(trs);
+        };
+        table.bootstrapTable({toggle:"table", customSort:"reverseOrder"});
     });
     return view;
 }

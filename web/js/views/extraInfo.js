@@ -80,7 +80,7 @@ export default function(no) {
                     historyArray = history.split(',');
                 }
                 //console.log(historyArray);
-                for(var entry = 0; entry < historyArray.length-1; entry++){ // len-1 because last is blank because of \n
+                for(var entry = 0; entry < historyArray.length; entry++){
                     const url = $("<a>");
                     url.attr('href', `${historyArray[entry]}`);
                     url.text(historyArray[entry]);

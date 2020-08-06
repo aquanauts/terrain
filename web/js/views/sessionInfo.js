@@ -40,15 +40,11 @@ function addPageTitle(view, sessionID) {
 
 function addSelectColumnHeadings(tableHeader){
     const headingRow = $('<tr>');
-        $('<th data-sortable="true" data-field="no.">').text("No.").appendTo(headingRow);
+        $('<th>').text("No.").appendTo(headingRow);
         for(var key in selectKeysAndHeadings){
             var columnHeading = selectKeysAndHeadings[key];
-            if(key == "errorStack") {    
-                $('<th data-field="stack">').text(columnHeading).appendTo(headingRow);
-            }
-            else {
-                $('<th>').text(columnHeading).appendTo(headingRow);
-            }
+            $('<th>').text(columnHeading).appendTo(headingRow);
+            
         };
         
         headingRow.appendTo(tableHeader);
@@ -172,11 +168,11 @@ export default function(sessionID){
             }
         };
         //table.bootstrapTable({sortName:"stack", sortOrder:"asc", sortStable:"false"});
-        function reverseOrder(table){
-            var trs = table.children('tr').get().reverse();
-            table.append(trs);
-        };
-        table.bootstrapTable({toggle:"table", customSort:"reverseOrder"});
+        //function reverseOrder(table){
+        //    var trs = table.children('tr').get().reverse();
+        //    table.append(trs);
+        //};
+        //table.bootstrapTable();
     });
     return view;
 }

@@ -64,11 +64,11 @@ describe('Session Info View', () => {
         expect(view.find('pre:last').text()).toEqual("Another error stack");
     });
     
-    it('Has a search bar', async () => {
-        let errorInfo = [{"sessionID":"1", "sessionHistory":"url1", "id":"100", "errorStack":"An error stack", "dateTime":"0"}, {"sessionID":"1", "sessionHistory":"url1", "id":"101", "errorStack":"Another error stack", "dateTime":"1"}];
-        errorInfoDeferred.resolve(errorInfo);
-        const searchBar = view.find('input');
-        expect(searchBar.prop('placeholder')).toEqual("Search");
-    });
+    //it('Has a search bar', async () => {
+    //    let errorInfo = [{"sessionID":"1", "sessionHistory":"url1", "id":"100", "errorStack":"An error stack", "dateTime":"0"}, {"sessionID":"1", "sessionHistory":"url1", "id":"101", "errorStack":"Another error stack", "dateTime":"1"}];
+    //    errorInfoDeferred.resolve(errorInfo);
+    //    const searchBar = view.find('input');
+    //    expect(searchBar.prop('placeholder')).toEqual("Search");
+    //});
 
 });

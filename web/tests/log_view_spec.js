@@ -24,8 +24,8 @@ describe('Log View', () => {
         errorInfoDeferred.resolve('{} \n');
         const firstHeading = view.find('tr:first th:first');
         const lastHeading = view.find('tr:first th:last');
-        expect(firstHeading.find('.th-inner').text()).toEqual("No.");
-        expect(lastHeading.find('.th-inner').text()).toEqual("URL");
+        expect(firstHeading.text()).toEqual("No.");
+        expect(lastHeading.text()).toEqual("URL");
     });
 
     it('Renders the error info in a table', async () => {
@@ -37,10 +37,10 @@ describe('Log View', () => {
         expect(lastValue.text()).toEqual("Uncaught TypeError");
     });
 
-    it('Has a search bar', async () => {
-        errorInfoDeferred.resolve('{} \n');
-        const searchBar = view.find('input');
-        expect(searchBar.prop('placeholder')).toEqual("Search");
-    });
+    //it('Has a search bar', async () => {
+    //    errorInfoDeferred.resolve('{} \n');
+    //    const searchBar = view.find('input');
+    //    expect(searchBar.prop('placeholder')).toEqual("Search");
+    //});
 
 });

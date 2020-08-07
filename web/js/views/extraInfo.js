@@ -24,6 +24,11 @@ const keysAndHeadings = {
     "sessionHistory":"Session History"
 };
 
+function renderSearchBar(view){
+    const container = view.find(".searchBarContainer");
+    const searchBar = container.append($('<input type="text" class="searchBar" placeholder="Search" onkeyup="searchEveryColumn()">'));
+}
+
 export default function(no) { 
 
     let view = template('extraInfoView');
@@ -95,7 +100,7 @@ export default function(no) {
          }
     //table.bootstrapTable();
     });
-
+    renderSearchBar(view);
     return view;
 }
 

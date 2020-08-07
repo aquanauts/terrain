@@ -1,19 +1,25 @@
 
-export function generateErrorTable(data, view){ //data is a string of json objects/dicts separated by \n
-          const errorArray = data.split("\n");            
-          const table = view.find("#errorTable");
-          const tableHeader = $("<thead>");
-          const headingRow = $("<tr>");
-    
-          tableHeader.append(headingRow);
+function renderSearchBar(view){
+    const container = view.find(".searchBarContainer");
+    const searchBar = container.append($('<input type="text" class="searchBar" placeholder="Search" onkeyup="searchEveryColumn()">'));
+}
 
-          $(headingRow).append($('<th>').text("No."));
-          $(headingRow).append($('<th>').text("Session ID"));
-          $(headingRow).append($('<th>').text("Error Event Message"));
-          $(headingRow).append($('<th>').text("Error Message"));
-          $(headingRow).append($('<th>').text("URL"));
-        
-          $(table).append(tableHeader);
+export function generateErrorTable(data, view){ //data is a string of json objects/dicts separated by \n
+    const errorArray = data.split("\n");            
+    const table = view.find("#errorTable");
+    const tableHeader = $("<thead>");
+    const headingRow = $("<tr>");
+
+
+    tableHeader.append(headingRow);
+
+    $(headingRow).append($('<th>').text("No."));
+    $(headingRow).append($('<th>').text("Session ID"));
+    $(headingRow).append($('<th>').text("Error Event Message"));
+    $(headingRow).append($('<th>').text("Error Message"));
+    $(headingRow).append($('<th>').text("URL"));
+
+    $(table).append(tableHeader);
           
           
           if(errorArray.length > 0) { 
@@ -61,7 +67,8 @@ export default function logViewFn() {
     let view = template('logView');
     
     $.get('/show_errors').then(function(data) {
-        generateErrorTable(data, view)
+        generateErrorTable(data, view);
+        renderSearchBar(view);
         });
         return view;
 }

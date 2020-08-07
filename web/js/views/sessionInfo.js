@@ -21,6 +21,11 @@ const keysAndHeadings = {
     "sessionHistory":"Session History"
 };
 
+function renderSearchBar(view){
+    const container = view.find(".searchBarContainer");
+    const searchBar = container.append($('<input type="text" class="searchBar" placeholder="Search" onkeyup="searchEveryColumn()">'));
+}
+
 const selectKeysAndHeadings = {
     "sessionHistory":"URL in History",
     "errorStack":"Error Stack",
@@ -150,8 +155,7 @@ export default function(sessionID){
                 
                 }
             }
-            
-            
+                        
             else {
                 infoRow.appendTo(tableBody);
                 ($('<td>').text(i)).appendTo(infoRow);
@@ -174,6 +178,7 @@ export default function(sessionID){
         //};
         //table.bootstrapTable();
     });
+    //renderSearchBar(view); Must account for rowspan
     return view;
 }
     

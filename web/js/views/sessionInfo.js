@@ -111,6 +111,7 @@ export default function(sessionID){
 
             historyLengthsPerError.push(singleHistoryArray.length);
         }
+
         //console.log(historyLengthsPerError);
         var errorNumCounter = 0;
         for (var i in historyArray){
@@ -154,8 +155,7 @@ export default function(sessionID){
                     errorNumCounter++;            
                 
                 }
-            }
-                        
+            }            
             else {
                 infoRow.appendTo(tableBody);
                 ($('<td>').text(i)).appendTo(infoRow);

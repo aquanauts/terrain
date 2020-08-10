@@ -13,7 +13,7 @@ export function generateErrorTable(data, view){ //data is a string of json objec
 
     tableHeader.append(headingRow);
 
-    $(headingRow).append($('<th>').text("No."));
+    $(headingRow).append($('<th onclick="reverseOrder()">').text("No."));
     $(headingRow).append($('<th>').text("Session ID"));
     $(headingRow).append($('<th>').text("Error Event Message"));
     $(headingRow).append($('<th>').text("Error Message"));

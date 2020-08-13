@@ -9,6 +9,8 @@ dependencies:
   - ipython
   - pylint
   - pytest-watch
+  - pytest-mock
+  - asynctest
   - aiohttp
   - pytest-aiohttp
   - pip

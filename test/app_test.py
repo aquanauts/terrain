@@ -143,7 +143,7 @@ async def test_webapp_deletes_pager_duty_key_log_content_and_returns_http_200(ai
     pager_duty_key_log.read.return_value = key_data_text
     resp = await client.get('/delete_pager_duty_key?num=1')
     assert resp.status == 200
-    pager_duty_key_log.delete.assert_called_with('1')
+    pager_duty_key_log.delete_key.assert_called_with('1')
     text = await resp.text()
     assert text == "Attempted to remove a certain pager duty key."
 

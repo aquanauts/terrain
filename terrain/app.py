@@ -51,7 +51,7 @@ class Terrain:
         return web.Response(text=self.pager_duty_key_log.read())
 
     async def delete_pager_duty_key(self, req):
-        self.pager_duty_key_log.delete(req.query['num'])
+        self.pager_duty_key_log.delete_key(req.query['num'])
         return web.Response(text="Attempted to remove a certain pager duty key.")
 
     async def root_index(self, _):

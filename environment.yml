@@ -4,11 +4,12 @@ channels:
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
-  - _openmp_mutex=4.5=0_gnu
+  - _openmp_mutex=4.5=1_gnu
   - aiohttp=3.6.2=py37h516909a_0
   - argh=0.26.2=pyh9f0ad1d_1002
   - astroid=2.4.2=py37hc8dfbb8_0
   - async-timeout=3.0.1=py_1000
+  - asynctest=0.13.0=py_0
   - attrs=19.3.0=py_0
   - backcall=0.2.0=pyh9f0ad1d_0
   - backports=1.0=py_2
@@ -22,42 +23,44 @@ dependencies:
   - idna=2.10=pyh9f0ad1d_0
   - importlib-metadata=1.7.0=py37hc8dfbb8_0
   - importlib_metadata=1.7.0=0
-  - ipython=7.16.1=py37h43977f1_0
+  - iniconfig=1.0.1=pyh9f0ad1d_0
+  - ipython=7.17.0=py37hc6149b9_0
   - ipython_genutils=0.2.0=py_1
   - isort=4.3.21=py37hc8dfbb8_1
   - jedi=0.17.2=py37hc8dfbb8_0
   - lazy-object-proxy=1.4.3=py37h8f50634_2
   - ld_impl_linux-64=2.34=hc38a660_9
   - libffi=3.2.1=he1b5a44_1007
-  - libgcc-ng=9.2.0=h24d8f2e_2
-  - libgomp=9.2.0=h24d8f2e_2
-  - libstdcxx-ng=9.2.0=hdf63c60_2
+  - libgcc-ng=9.3.0=h24d8f2e_14
+  - libgomp=9.3.0=h24d8f2e_14
+  - libstdcxx-ng=9.3.0=hdf63c60_14
   - mccabe=0.6.1=py_1
   - more-itertools=8.4.0=py_0
   - multidict=4.7.5=py37h8f50634_1
   - ncurses=6.2=he1b5a44_1
-  - openssl=1.1.1g=h516909a_0
+  - openssl=1.1.1g=h516909a_1
   - packaging=20.4=pyh9f0ad1d_0
   - parso=0.7.1=pyh9f0ad1d_0
   - pathtools=0.1.2=py_1
   - pexpect=4.8.0=py37hc8dfbb8_1
   - pickleshare=0.7.5=py37hc8dfbb8_1001
-  - pip=20.1.1=py_1
+  - pip=20.2.1=py_0
   - pluggy=0.13.1=py37hc8dfbb8_2
-  - prompt-toolkit=3.0.5=py_1
+  - prompt-toolkit=3.0.6=py_0
   - ptyprocess=0.6.0=py_1001
   - py=1.9.0=pyh9f0ad1d_0
   - pygments=2.6.1=py_0
   - pylint=2.5.3=py37hc8dfbb8_0
   - pyparsing=2.4.7=pyh9f0ad1d_0
-  - pytest=5.4.3=py37hc8dfbb8_0
+  - pytest=6.0.1=py37hc8dfbb8_0
   - pytest-aiohttp=0.3.0=py_0
+  - pytest-mock=3.1.1=py_0
   - pytest-watch=4.1.0=py37_1000
-  - python=3.7.8=h6f2ec95_0_cpython
+  - python=3.7.8=h6f2ec95_1_cpython
   - python_abi=3.7=1_cp37m
   - pyyaml=5.3.1=py37h8f50634_0
   - readline=8.0=he28a2e2_2
-  - setuptools=49.2.0=py37hc8dfbb8_0
+  - setuptools=49.3.1=py37hc8dfbb8_0
   - six=1.15.0=pyh9f0ad1d_0
   - sqlite=3.32.3=hcee41ef_1
   - tk=8.6.10=hed695b0_0
@@ -72,11 +75,11 @@ dependencies:
   - yaml=0.2.5=h516909a_0
   - yarl=1.3.0=py37h516909a_1000
   - zipp=3.1.0=py_0
-  - zlib=1.2.11=h516909a_1006
+  - zlib=1.2.11=h516909a_1007
   - pip:
     - aiohttp-devtools==0.13.1
     - click==7.1.2
-    - devtools==0.5.1
+    - devtools==0.6
     - editorconfig==0.12.2
     - jsbeautifier==1.11.0
     - jsmin==2.2.2

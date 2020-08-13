@@ -21,7 +21,7 @@ class PagerDutyKeyLog:
 
     def delete_key(self, num):
         lines = self.readlines()
-        lines.pop(num)
+        lines.pop(int(num))
         with self.file_path.open(mode="w") as key_log:
             for line in lines:
                 key_log.write(line + "\n")

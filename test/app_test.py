@@ -12,18 +12,14 @@ def exception_log_fixture():
 def session_id_store_fixture():
     return mock.Mock()
 
-@pytest.fixture(name='webapp')
-def webapp_fixture(exception_log, session_id_store):
-    return create_app(exception_log, session_id_store)
+@pytest.fixture(name='pager_duty_key_log')
+def pager_duty_key_log_fixture():
+    return mock.Mock()
 
-async def test_webapp_serves_log_content_and_returns_http_200(aiohttp_client, webapp, exception_log):
-    client = await aiohttp_client(webapp)
-    exception_data = json.dumps({"message" : "message"})
-    exception_log.read.return_value = exception_data
-    resp = await client.get('/show_errors')
-    assert resp.status == 200
-    text = await resp.text()
-    assert text == exception_data
+@pytest.fixture(name='webapp')
+def webapp_fixture(exception_log, session_id_store, pager_duty_key_log):
+    return create_app(exception_log, session_id_store, pager_duty_key_log)
+
 
 async def test_webapp_serves_index_html_at_root_path(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)
@@ -47,6 +43,29 @@ async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, excep
     exception_data = {"message": "message"}
     await client.post('/receive_error', data=json.dumps(exception_data))
     exception_log.write.assert_called_with(json.dumps(exception_data))
+
+async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    exception_data = {
+        "message": "message",
+        "url": "http://localhost",
+        "lineNo": 42,
+        "colNo": 80,
+        "error": {}
+    }
+    resp = await client.post('/receive_error', data=json.dumps(exception_data))
+    assert resp.status == 200
+    text = await resp.text()
+    assert text == "Attempted to append error information to the log."
+
+async def test_webapp_serves_log_content_and_returns_http_200(aiohttp_client, webapp, exception_log):
+    client = await aiohttp_client(webapp)
+    exception_data = json.dumps({"message" : "message"})
+    exception_log.read.return_value = exception_data
+    resp = await client.get('/show_errors')
+    assert resp.status == 200
+    text = await resp.text()
+    assert text == exception_data
 
 async def test_webapp_can_read_an_error_by_its_row_number(aiohttp_client, webapp, exception_log):
     expected_info = {"exceptionInfo": "stuff goes here"}
@@ -76,19 +95,6 @@ async def test_webapp_generates_library_with_session_id(aiohttp_client, webapp, 
     body = await resp.text()
     assert "window.__terrainSessionID = 42;" in jsbeautifier.beautify(body)
 
-async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp):
-    client = await aiohttp_client(webapp)
-    exception_data = {
-        "message": "message",
-        "url": "http://localhost",
-        "lineNo": 42,
-        "colNo": 80,
-        "error": {}
-    }
-    resp = await client.post('/receive_error', data=json.dumps(exception_data))
-    assert resp.status == 200
-    text = await resp.text()
-    assert text == "Attempted to append error information to the log."
 
 async def test_webapp_has_a_fail_route_for_testing_errors(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)
@@ -96,6 +102,50 @@ async def test_webapp_has_a_fail_route_for_testing_errors(aiohttp_client, webapp
     assert resp.status == 500
     text = await resp.text()
     assert "500 Internal Server Error" in text
+
+async def test_webapp_writes_pager_duty_keys_to_the_log(aiohttp_client, webapp, pager_duty_key_log):
+    client = await aiohttp_client(webapp)
+    key_data = {
+        "host": "somehostname",
+        "key": "314"
+    }
+    await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
+    pager_duty_key_log.write.assert_called_with(json.dumps(key_data))
+
+async def test_webapp_records_pager_duty_keys_and_returns_http_200(aiohttp_client, webapp):
+    client = await aiohttp_client(webapp)
+    key_data = {
+        "host": "somehostname",
+        "key": "314"
+    }
+    resp = await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
+    assert resp.status == 200
+    text = await resp.text()
+    assert text == "Attempted to append pager duty key information to the log."
+
+async def test_webapp_serves_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp, pager_duty_key_log):
+    client = await aiohttp_client(webapp)
+    key_data = {
+        "host": "somehostname",
+        "key": "314"
+    }
+    key_data_text = json.dumps(key_data)
+    pager_duty_key_log.read.return_value = key_data_text
+    resp = await client.get('/get_pager_duty_keys')
+    assert resp.status == 200
+    text = await resp.text()
+    assert text == key_data_text
+
+
+async def test_webapp_deletes_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp, pager_duty_key_log):
+    client = await aiohttp_client(webapp)
+    key_data_text = '{"host": "somehostname","key": "314"}, {"host": "someotherhostname", "key": "227"}'
+    pager_duty_key_log.read.return_value = key_data_text
+    resp = await client.get('/delete_pager_duty_key?num=1')
+    assert resp.status == 200
+    pager_duty_key_log.delete.assert_called_with('1')
+    text = await resp.text()
+    assert text == "Attempted to remove a certain pager duty key."
 
 
 async def test_webapp_serves_static_content(aiohttp_client, webapp):

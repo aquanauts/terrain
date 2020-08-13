@@ -40,7 +40,7 @@ def test_reads_lines_from_a_file(pager_duty_key_log, mock_path):
     assert pager_duty_key_log.readlines() == ['{"host":"somehostname", "key":"000"}', \
             '{"host":"anotherhostname", "key":"111"}']
 
-def test_deletes_lines_from_a_file(pager_duty_key_log, mock_path):
+def test_deletes_line_from_a_file(pager_duty_key_log, mock_path):
     mock_path.read_text.return_value = '{"host":"somehostname", "key":"000"}\n{"host":"anotherhostname", "key":"111"}\n'
     assert pager_duty_key_log.delete_key(1) == ['{"host":"somehostname", "key":"000"}']
     mock_path.open.return_value.write.assert_called_with('{"host":"somehostname", "key":"000"}\n')

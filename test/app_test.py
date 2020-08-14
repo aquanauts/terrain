@@ -3,6 +3,7 @@ import json
 import pytest
 import jsbeautifier
 from terrain.app import create_app
+from terrain.pager_duty_key_store import obfuscate_keys
 
 @pytest.fixture(name='exception_log')
 def exception_log_fixture():
@@ -12,13 +13,13 @@ def exception_log_fixture():
 def session_id_store_fixture():
     return mock.Mock()
 
-@pytest.fixture(name='pager_duty_key_log')
-def pager_duty_key_log_fixture():
+@pytest.fixture(name='pager_duty_key_store')
+def pager_duty_key_store_fixture():
     return mock.Mock()
 
 @pytest.fixture(name='webapp')
-def webapp_fixture(exception_log, session_id_store, pager_duty_key_log):
-    return create_app(exception_log, session_id_store, pager_duty_key_log)
+def webapp_fixture(exception_log, session_id_store, pager_duty_key_store):
+    return create_app(exception_log, session_id_store, pager_duty_key_store)
 
 
 async def test_webapp_serves_index_html_at_root_path(aiohttp_client, webapp):
@@ -103,14 +104,15 @@ async def test_webapp_has_a_fail_route_for_testing_errors(aiohttp_client, webapp
     text = await resp.text()
     assert "500 Internal Server Error" in text
 
-async def test_webapp_writes_pager_duty_keys_to_the_log(aiohttp_client, webapp, pager_duty_key_log):
+async def test_webapp_writes_pager_duty_keys_to_the_log(aiohttp_client, webapp, pager_duty_key_store):
     client = await aiohttp_client(webapp)
     key_data = {
         "host": "somehostname",
         "key": "314"
     }
+    # TODO Change to use `pager-duty-key` resource
     await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
-    pager_duty_key_log.write.assert_called_with(json.dumps(key_data))
+    pager_duty_key_store.add_key.assert_called_with(key_data)
 
 async def test_webapp_records_pager_duty_keys_and_returns_http_200(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)
@@ -118,34 +120,38 @@ async def test_webapp_records_pager_duty_keys_and_returns_http_200(aiohttp_clien
         "host": "somehostname",
         "key": "314"
     }
+    # TODO Change to use `pager-duty-key` resource
     resp = await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
     assert resp.status == 200
     text = await resp.text()
-    assert text == "Attempted to append pager duty key information to the log."
+    assert text == "Successfully added pager duty key"
 
-async def test_webapp_serves_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp, pager_duty_key_log):
+async def test_webapp_serves_pager_duty_key_log_content_and_returns_http_200(aiohttp_client,\
+        webapp, pager_duty_key_store):
     client = await aiohttp_client(webapp)
-    key_data = {
+    key_data = [{
         "host": "somehostname",
-        "key": "314"
-    }
-    key_data_text = json.dumps(key_data)
-    pager_duty_key_log.read.return_value = key_data_text
+        "key": "3141592"
+    }]
+    pager_duty_key_store.all_keys.return_value = key_data
     resp = await client.get('/get_pager_duty_keys')
     assert resp.status == 200
     text = await resp.text()
-    assert text == key_data_text
+    assert text == json.dumps(obfuscate_keys(key_data))
 
 
-async def test_webapp_deletes_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp, pager_duty_key_log):
+async def test_webapp_deletes_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp,\
+        pager_duty_key_store):
     client = await aiohttp_client(webapp)
-    key_data_text = '{"host": "somehostname","key": "314"}, {"host": "someotherhostname", "key": "227"}'
-    pager_duty_key_log.read.return_value = key_data_text
-    resp = await client.get('/delete_pager_duty_key?num=1')
+    key_data_text = '{"name": "key_1", "host": "somehostname","key": "314"},\
+            {"name": "key_2", ""host": "someotherhostname", "key": "227"}'
+    pager_duty_key_store.read.return_value = key_data_text
+    #resp = await client.delete('/pager-duty-keys/key%201')
+    resp = await client.get('/delete_pager_duty_key?name=key_2')
     assert resp.status == 200
-    pager_duty_key_log.delete_key.assert_called_with('1')
+    pager_duty_key_store.delete_key.assert_called_with('key_2')
     text = await resp.text()
-    assert text == "Attempted to remove a certain pager duty key."
+    assert text == "Successfully removed a pager duty key."
 
 
 async def test_webapp_serves_static_content(aiohttp_client, webapp):

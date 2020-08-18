@@ -110,8 +110,8 @@ async def test_webapp_writes_pager_duty_keys_to_the_log(aiohttp_client, webapp, 
         "host": "somehostname",
         "key": "314"
     }
-    # TODO Change to use `pager-duty-key` resource
-    await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
+
+    await client.post('/pager-duty-keys', data=json.dumps(key_data))
     pager_duty_key_store.add_key.assert_called_with(key_data)
 
 async def test_webapp_records_pager_duty_keys_and_returns_http_200(aiohttp_client, webapp):
@@ -121,7 +121,7 @@ async def test_webapp_records_pager_duty_keys_and_returns_http_200(aiohttp_clien
         "key": "314"
     }
     # TODO Change to use `pager-duty-key` resource
-    resp = await client.post('/receive_pager_duty_key', data=json.dumps(key_data))
+    resp = await client.post('/pager-duty-keys', data=json.dumps(key_data))
     assert resp.status == 200
     text = await resp.text()
     assert text == "Successfully added pager duty key"
@@ -134,7 +134,7 @@ async def test_webapp_serves_pager_duty_key_log_content_and_returns_http_200(aio
         "key": "3141592"
     }]
     pager_duty_key_store.all_keys.return_value = key_data
-    resp = await client.get('/get_pager_duty_keys')
+    resp = await client.get('/pager-duty-keys')
     assert resp.status == 200
     text = await resp.text()
     assert text == json.dumps(obfuscate_keys(key_data))
@@ -143,11 +143,11 @@ async def test_webapp_serves_pager_duty_key_log_content_and_returns_http_200(aio
 async def test_webapp_deletes_pager_duty_key_log_content_and_returns_http_200(aiohttp_client, webapp,\
         pager_duty_key_store):
     client = await aiohttp_client(webapp)
-    key_data_text = '{"name": "key_1", "host": "somehostname","key": "314"},\
-            {"name": "key_2", ""host": "someotherhostname", "key": "227"}'
-    pager_duty_key_store.read.return_value = key_data_text
-    #resp = await client.delete('/pager-duty-keys/key%201')
-    resp = await client.get('/delete_pager_duty_key?name=key_2')
+    key_data = [{"name": "key_1", "host": "somehostname", "key": "314"},\
+            {"name": "key_2", "host": "someotherhostname", "key": "227"}]
+    pager_duty_key_store.all_keys.return_value = key_data
+
+    resp = await client.delete('/pager-duty-keys?keyname=key_2')
     assert resp.status == 200
     pager_duty_key_store.delete_key.assert_called_with('key_2')
     text = await resp.text()

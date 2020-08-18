@@ -1,8 +1,11 @@
 import os.path
 
+#TODO separate a filestore class
+#class SessionIDStore(FileStore):
 class SessionIDStore:
     def __init__(self):
         self.session_file = "data/session_id_store.txt"
+        #self.file_store = FileStore(self.session_file)
         self.current_id = self.read_current_id()
 
     def read_current_id(self) -> int:

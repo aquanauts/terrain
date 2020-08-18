@@ -10,15 +10,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="manifest" href="/favicon/site.webmanifest">
+    <link type="image/svg" href="/vendor/sort-solid.svg">    
     <script type="text/javascript" src='/vendor/jquery-2.2.4/jquery-2.2.4.min.js'></script>
     <script type="text/javascript" src='/js/views/helpers/search.js'></script>
     <script type="text/javascript" src='/js/views/helpers/sort.js'></script>
+    <script type="text/javascript" src='/js/views/helpers/pagerDutyHelperFunctions.js'></script>
     <script type="text/javascript" src='/js/events.js'></script>
     <script type="text/javascript" src='/js/templates.js'></script>
     <script type="text/javascript" src='/js/router.js'></script>
     <script type="text/javascript" src='/t.js'></script>
-    <!--script type="text/javascript" src="vendor/bootstrap-table/bootstrap-table.min.js"></script>   
-    <script type="text/javascript" src="vendor/bootstrap-table/bootstrap-table-export.min.js"></script-->   
     <link href="/terrain.css" rel="stylesheet">
 
   </head>
@@ -42,6 +42,9 @@
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <a class="nav-link" href="#errorLog">Error Log</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#pagerDutyKeys">PagerDuty</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/example/index.html">Example Usage</a>
@@ -90,6 +93,66 @@
           </div>
         </div>
 
+        <div class="pagerDutyView">
+          <div class="container">
+            <h1>Pager Duty</h1>
+            <p>If you would like to receive PagerDuty alerts for significant errors on your applications, you can manage your routing keys here.</p>
+          </div>
+          <div class="container">
+            <h3>Add Routing Key</h3>
+          </div>
+
+          <div class="container">
+            <div class="col-sm-5 alert alert-danger" role="alert" id="uniqueNameAlert" style="display:none">
+              That key name is already in use. It must be unique.
+            </div>
+            <div class="col-sm-5 alert alert-danger" role="alert" id="missingFormInfoAlert" style="display:none"> 
+              Oops! It looks like some information is missing.
+            </div>
+          </div>
+          <div class="container">
+            <form id="newPagerDutyKeyForm">
+              <div class="form-group">
+                <label for="keyName" class="col-sm-5 col-form-label">Key Name</label>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="keyName" placeholder="Enter a unique key name.">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="hostName" class="col-sm-5 col-form-label">Application Host</label>
+                <div class="col-sm-5">
+                  <input type="url" class="form-control" id="hostName" placeholder="e.g. http://terrain.aq.tc/">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="key" class="col-sm-5 col-form-label">PagerDuty Routing Key</label>
+                <div class="col-sm-5">
+                  <input type="text" class="form-control" id="key" placeholder="Enter your application's PagerDuty routing key.">
+                </div> 
+              </div>
+              <div class="col-sm-5 form-group">
+                <button type="submit" class="btn btn-primary" id="newKeyInfoButton">Submit</button>
+              </div>
+            </form>
+          </div>
+          
+
+          <div class="container">
+            <h3>Current Routing Keys</h3>
+          </div>
+          
+          
+          <div class="container">
+            <button type="button" class="btn btn-danger" id="deleteKeysButton">Delete Selected Keys</button>
+          </div>
+          
+          <div class="container">
+              <table class="table table-striped table-bordered"
+                id="pagerDutyTable">
+              </table>
+          </div>
+        </div>
+        
         <div class="sessionInfoView">
           <div class="container">
             <h1></h1>
@@ -105,6 +168,7 @@
               </table>
           </div>
         </div>
+        
       </div>
     </div>
     <script type="module">

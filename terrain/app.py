@@ -53,7 +53,7 @@ class Terrain:
         return web.json_response(data=obfuscate_keys(all_keys))
 
     async def delete_pager_duty_key(self, req):
-        self.pager_duty_key_store.delete_key(req.query['name'])
+        self.pager_duty_key_store.delete_key(req.query["keyname"])
         return web.Response(text="Successfully removed a pager duty key.")
 
     async def root_index(self, _):
@@ -89,9 +89,9 @@ def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=N
                     web.get('/t.js', app.terrain_service.generate_library),
                     web.get('/get_error', app.terrain_service.get_error),
                     web.get('/get_session', app.terrain_service.get_session),
-                    web.get('/get_pager_duty_keys', app.terrain_service.get_pager_duty_keys),
-                    web.post('/receive_pager_duty_key', app.terrain_service.post_pager_duty_key),
-                    web.get('/delete_pager_duty_key', app.terrain_service.delete_pager_duty_key),
+                    web.get('/pager-duty-keys', app.terrain_service.get_pager_duty_keys),
+                    web.post('/pager-duty-keys', app.terrain_service.post_pager_duty_key),
+                    web.delete('/pager-duty-keys', app.terrain_service.delete_pager_duty_key),
                     web.static('/', "web"), # This must be the last route
                     ])
     return app

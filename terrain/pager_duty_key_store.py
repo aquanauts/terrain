@@ -21,6 +21,9 @@ class PagerDutyKeyStore:
 
     def add_key(self, new_key):
         lines = self.all_keys()
+        for line in lines:
+            if line["name"] == new_key["name"]:
+                raise Exception('They key name entered is already taken. It must be unique.')
         lines.append(new_key)
         self._write_lines(lines)
 

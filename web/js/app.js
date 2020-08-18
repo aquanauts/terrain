@@ -2,6 +2,7 @@ import homeView from './views/home.js';
 import logView from './views/log.js';
 import extraInfoView from './views/extraInfo.js';
 import sessionView from './views/sessionInfo.js';
+import pagerDutyView from './views/pagerDutyView.js';
 
 export function routes() {
     return {
@@ -11,6 +12,7 @@ export function routes() {
         '#home': logView,
         '#errorLog' : logView,
         '#extraInfo': extraInfoView,
-        '#sessionID': sessionView
+        '#sessionID': sessionView,
+        '#pagerDutyKeys': pagerDutyView
     }
 }

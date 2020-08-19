@@ -11,8 +11,6 @@ function searchEveryColumn(){
     var rows = table[0].getElementsByTagName("tr");
     var matchFoundInRow = false;
     const numColumns = rows[0].cells.length;
-    //console.log(rows[1].getElementsByTagName("td"))
-    //console.log(rows[1].getElementsByTagName("td")[0].textContent);
     
     for (var i = 1; i < rows.length; i++) {
         var entriesInRow = rows[i].getElementsByTagName("td");

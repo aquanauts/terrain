@@ -1,9 +1,14 @@
-from unittest import mock
 import json
+from asynctest import mock
 import pytest
 import jsbeautifier
 from terrain.app import create_app
+from terrain import app
 from terrain.pager_duty_key_store import obfuscate_keys
+from terrain import alert
+from terrain.alert import Level
+
+# pylint: disable=W0703
 
 @pytest.fixture(name='exception_log')
 def exception_log_fixture():
@@ -21,6 +26,22 @@ def pager_duty_key_store_fixture():
 def webapp_fixture(exception_log, session_id_store, pager_duty_key_store):
     return create_app(exception_log, session_id_store, pager_duty_key_store)
 
+@pytest.fixture(name='mock_session')
+def mock_session_fixture(mocker):
+    # https://asynctest.readthedocs.io/en/latest/asynctest.mock.html
+    mock_session = mocker.patch("aiohttp.ClientSession").return_value
+    mock_session.post = mock.CoroutineMock()
+    mock_session.close = mock.CoroutineMock()
+    mock_session.post.return_value = mock.CoroutineMock()
+    mock_session.post.return_value.text = mock.CoroutineMock()
+    return mock_session
+
+
+@pytest.fixture(name='mock_alerts')
+def mock_alerts_fixture(mocker):
+    mock_alerts = mock.MagicMock(spec=alert.Alerts)
+    mocker.patch("terrain.alert.Alerts", return_value=mock_alerts)
+    return mock_alerts
 
 async def test_webapp_serves_index_html_at_root_path(aiohttp_client, webapp):
     client = await aiohttp_client(webapp)
@@ -160,3 +181,20 @@ async def test_webapp_serves_static_content(aiohttp_client, webapp):
     assert resp.status == 200
     text = await resp.text()
     assert "Terrain" in text
+
+async def test_webapp_exception_handler_sends_pager_duty_alerts(mock_alerts):
+    handler = app.create_exception_handler(mock_alerts)
+    try:
+        raise Exception("Woah!")
+    except Exception as ex:
+        await handler(None, {"message": "Something bad", "exception": ex})
+        mock_alerts.send_alert.assert_awaited_with(
+            "Terrain", Level.ERROR, "Caught exception Exception(Woah!). Message: Something bad",
+        )
+
+async def test_webapp_exception_handler_sends_pager_duty_alerts_when_no_exception_in_context(mock_alerts):
+    handler = app.create_exception_handler(mock_alerts)
+    await handler(None, {"message": "Something bad"})
+    mock_alerts.send_alert.assert_awaited_with(
+        "Terrain", Level.ERROR, "Caught exception N/A. Message: Something bad",
+    )

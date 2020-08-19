@@ -1,4 +1,4 @@
-export default function pagerDutyViewFn() {
+export default function () {
     let view = template('pagerDutyView');
     const table = view.find('#pagerDutyTable');
     generatePagerDutyKeyTable(table);

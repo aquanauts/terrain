@@ -1,17 +1,23 @@
 import json
 import pathlib
+import asyncio
+import logging
 from jsmin import jsmin
 from aiohttp import web
+from terrain import alert
 from terrain.exception_log import ExceptionLog
 from terrain.session_id_store import SessionIDStore
+from terrain.alert import Level
 from terrain.pager_duty_key_store import PagerDutyKeyStore
 from terrain.pager_duty_key_store import obfuscate_keys
+#from classifier.tag import isTerrain
 
 class Terrain:
-    def __init__(self, exception_log, session_id_store, pager_duty_key_store):
+    def __init__(self, exception_log, session_id_store, pager_duty_key_store, alerts):
         self.exception_log = exception_log
         self.session_id_store = session_id_store
         self.pager_duty_key_store = pager_duty_key_store
+        self.alerts = alerts
 
     async def fail_route(self, _):
         raise Exception("Raised test exception")
@@ -21,12 +27,17 @@ class Terrain:
         # https://docs.aiohttp.org/en/stable/web_reference.html#aiohttp.web.BaseRequest
         content = await req.content.read()
         decoded_content = content.decode()
-
         # validate that the content is really JSON
         json.loads(decoded_content)
-
         self.exception_log.write(decoded_content)
-
+        #TODO refactor
+        #if "errorStack" in content_dict:
+        #    print(content_dict["errorStack"])
+        #    error_stack = content_dict["errorStack"]
+        #else:
+        #    error_stack = ''
+        #if isTerrain(error_stack): # TODO add routing key
+        #    await self.alerts.send_alert(source="Terrain", level=Level.ERROR, summary=error_stack)
         return web.Response(text="Attempted to append error information to the log.")
 
     async def get_error(self, req):
@@ -71,6 +82,22 @@ class Terrain:
 async def on_prepare(_, response):
     response.headers['cache-control'] = 'no-cache'
 
+async def set_exception_handler(alerts):
+    asyncio.get_running_loop().set_exception_handler(create_exception_handler(alerts))
+
+def create_exception_handler(alerts):
+    def handle_exception(_, context):
+        formatted_context_exception = "N/A"
+        if "exception" in context:
+            context_exception = context["exception"]
+            formatted_context_exception = f"{type(context_exception).__name__}({context_exception})"
+
+        exception_message = f"Caught exception {formatted_context_exception}. Message: {context['message']}"
+        logging.exception(exception_message)
+        return asyncio.ensure_future(alerts.send_alert("Terrain", Level.ERROR, exception_message))
+
+    return handle_exception
+
 def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=None):
     if exception_log is None:
         exception_log = ExceptionLog(pathlib.Path("data/exceptions.txt"))
@@ -78,10 +105,11 @@ def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=N
         session_id_store = SessionIDStore()
     if pager_duty_key_store is None:
         pager_duty_key_store = PagerDutyKeyStore(pathlib.Path("data/pager_duty_key_store.txt"))
-
     app = web.Application()
     app.on_response_prepare.append(on_prepare)
-    app.terrain_service = Terrain(exception_log, session_id_store, pager_duty_key_store)
+    alerts = alert.Alerts()
+    asyncio.ensure_future(set_exception_handler(alerts))
+    app.terrain_service = Terrain(exception_log, session_id_store, pager_duty_key_store, alerts)
     app.add_routes([web.get('/', app.terrain_service.root_index),
                     web.get('/fail', app.terrain_service.fail_route),
                     web.post('/receive_error', app.terrain_service.post_error),

@@ -4,7 +4,7 @@ function renderSearchBar(view){
 }
 
 export function generateUniqueNewErrorTable(data, view){ //data is a string of json objects/dicts separated by \n            
-    renderSearchBar() //TODO Demo example - significant error that should be flagged
+    //renderSearchBar() //TODO Demo example - significant error that should be flagged
     console.log(data)
     console.log(data.length)
     let errorArray = data;

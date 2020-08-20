@@ -2,13 +2,15 @@ import pagerDutyView from '/js/views/pagerDutyView.js';
 
 describe('Pager Duty View', () => {
     
-    let errorInfoDeferred, view;   
+    let getDeferred, postDeferred, view;   
 
     beforeEach(() => {
-        //errorInfoDeferred = $.Deferred();
-        //spyOn($, 'get').and.returnValue(errorInfoDeferred);
-        view = pagerDutyView();
-        //view = logView(1);
+        getDeferred = $.Deferred();
+        spyOn($, 'get').and.returnValue(getDeferred);
+
+        postDeferred =  $.Deferred(); //TODO make assertions about the arguments to post
+        spyOn($, 'post').and.returnValue(postDeferred);
+        view = pagerDutyView(1);
     });
 
     it('Describes purpose of view', async () => {
@@ -28,28 +30,31 @@ describe('Pager Duty View', () => {
     });
     
     /*it('Submits information, checking for incomplete forms or repeated key name', async () => {
-        errorInfoDeferred.resolve('{} \n');
+        //spyOn($, 'post')
+        getDeferred.resolve('{} \n');
         const firstHeading = view.find('tr:first th:first');
         const lastHeading = view.find('tr:first th:last');
         expect(firstHeading.text()).toEqual("No.");
         expect(lastHeading.text()).toEqual("URL");
+        expect
     });
 
     /*it('Renders the current routing information in a table with checkboxes and an option to delete', async () => {
-        let errorInfo = '{"session": "4","errorEventMessage": "Uncaught TypeError"}\n'; 
-        errorInfoDeferred.resolve(errorInfo);
-        const firstValue = view.find('tbody').find('tr:nth-child(1) td:nth-child(2)');
-        const lastValue = view.find('tbody').find('tr:nth-child(1) td:nth-child(3)');
-        expect(firstValue.text()).toEqual("4");
-        expect(lastValue.text()).toEqual("Uncaught TypeError");
+        //generatePagerDutyKeyTable(view.find('table')[1]);
+        let currentInfo = '{"name":"Name", "host":"gracious, "key":"12345"}'
+        currentKeyInfo.resolve(currentInfo);
+        const firstHostName = view.find('tbody')[1].find('tr:nth-child(1) td:nth-child(3)');
+        const firstTableCell = view.find('tbody')[1].find('tr:nth-child(1) td:nth-child(1)');
+        expect(firstHostName).toEqual('gracious');
+        const firstCheckBox =  firstTableCell.find('input').attr('type').toEqual('checkbox');
+        expect(view.find('button')[1].textContent).toEqual("Delete Selected Keys");
     });
     
     it('Deletes selected keys', async () => {
         errorInfoDeferred.resolve('{} \n');
         const firstHeading = view.find('tr:first th:first');
         const lastHeading = view.find('tr:first th:last');
-        expect(firstHeading.text()).toEqual("No.");
-        expect(lastHeading.text()).toEqual("URL");
+        expect($, 'ajax').toHaveBeenCalledWith();
     });
     
     it('Shows updated table after submit or delete actions', async () => {
@@ -58,7 +63,7 @@ describe('Pager Duty View', () => {
         const lastHeading = view.find('tr:first th:last');
         expect(firstHeading.text()).toEqual("No.");
         expect(lastHeading.text()).toEqual("URL");
-    });*/
-
+    });
+*/
 
 });

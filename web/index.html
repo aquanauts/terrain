@@ -44,6 +44,9 @@
               <a class="nav-link" href="#errorLog">Error Log</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="#interestingErrors">Interesting Errors</a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="#pagerDutyKeys">PagerDuty</a>
             </li>
             <li class="nav-item">
@@ -78,11 +81,35 @@
           </div>
         </div>
 
+        <div class="interestingErrorsView">
+          <div class="container">
+            <h1>Interesting Errors</h1>
+          </div>
+          <div class="container">
+            <p>The most recent errors that are unique (logged for the first time) are listed below.</p>
+            <p>You will receive PagerDuty alerts on unique errors for your application if your routing key is logged in the PagerDuty section.</p>
+          </div>        
+          
+          <div class="container searchBarContainer">
+          </div>
+
+          <div class="container">
+              <table class="table table-striped 
+                table-bordered" id="uniqueNewErrorTable">                
+              </table>
+          </div>
+          
+          <div class="container">
+              <table class="table table-striped 
+                table-bordered" id="repetitiveErrorTable">                
+              </table>
+          </div>
+        </div>
+
         <div class="extraInfoView">
           <div class="container">
             <h1></h1>
           </div>
-
           <div class="container searchBarContainer">
           </div>
           
@@ -111,27 +138,27 @@
             </div>
           </div>
           <div class="container">
-            <form id="newPagerDutyKeyForm">
+            <form>
               <div class="form-group">
-                <label for="keyName" class="col-sm-5 col-form-label">Key Name</label>
+                <label class="col-sm-5 col-form-label">Key Name</label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control" id="keyName" placeholder="Enter a unique key name.">
+                  <input type="text" class="form-control" placeholder="Enter a unique key name.">
                 </div>
               </div>
               <div class="form-group">
-                <label for="hostName" class="col-sm-5 col-form-label">Application Host</label>
+                <label class="col-sm-5 col-form-label">Application Host</label>
                 <div class="col-sm-5">
-                  <input type="url" class="form-control" id="hostName" placeholder="e.g. http://terrain.aq.tc/">
+                  <input type="url" class="form-control" placeholder="e.g. http://terrain.aq.tc/">
                 </div>
               </div>
               <div class="form-group">
-                <label for="key" class="col-sm-5 col-form-label">PagerDuty Routing Key</label>
+                <label class="col-sm-5 col-form-label">PagerDuty Routing Key</label>
                 <div class="col-sm-5">
-                  <input type="text" class="form-control" id="key" placeholder="Enter your application's PagerDuty routing key.">
+                  <input type="text" class="form-control" placeholder="Enter your application's PagerDuty routing key.">
                 </div> 
               </div>
               <div class="col-sm-5 form-group">
-                <button type="submit" class="btn btn-primary" id="newKeyInfoButton">Submit</button>
+                <button type="submit" class="btn btn-primary" onclick="submitNewKeyForm()">Submit</button>
               </div>
             </form>
           </div>
@@ -143,7 +170,7 @@
           
           
           <div class="container">
-            <button type="button" class="btn btn-danger" id="deleteKeysButton">Delete Selected Keys</button>
+            <button type="button" class="btn btn-danger" onclick="deleteSelectedRows()">Delete Selected Keys</button>
           </div>
           
           <div class="container">

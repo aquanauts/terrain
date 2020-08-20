@@ -1,10 +1,7 @@
 export default function () {
     let view = template('pagerDutyView');
-    const table = view.find('#pagerDutyTable');
+    const table = view.find('table');
     generatePagerDutyKeyTable(table);
-    const newKeySubmitButton = view.find("#newKeyInfoButton");
-    const deleteKeysButton =  view.find("#deleteKeysButton");    
-    newKeySubmitButton.attr('onclick', 'submitNewKeyForm()');
-    deleteKeysButton.attr('onclick', 'deleteSelectedRows()');
     return view;
 }
+//TODO use class names instead of ids 

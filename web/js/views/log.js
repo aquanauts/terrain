@@ -9,11 +9,11 @@ export function generateErrorTable(data, view){ //data is a string of json objec
     const table = view.find("#errorTable");
     const tableHeader = $("<thead>");
     const headingRow = $("<tr>");
-
+    
 
     tableHeader.append(headingRow);
     const firstHeading = $('<th onclick="reverseOrder()">').text("No.");
-    $(headingRow).append(firstHeading.append($('<img class="icon" width="16" height="16" src="vendor/sort-solid.svg">')));
+    $(headingRow).append(firstHeading.append($('<img class="icon" width="16" height="16" src="/vendor/sort-solid.svg">')));
     $(headingRow).append($('<th>').text("Session ID"));
     $(headingRow).append($('<th>').text("Error Event Message"));
     $(headingRow).append($('<th>').text("Error Message"));

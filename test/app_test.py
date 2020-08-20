@@ -12,7 +12,9 @@ from terrain.alert import Level
 
 @pytest.fixture(name='exception_log')
 def exception_log_fixture():
-    return mock.Mock()
+    log = mock.Mock()
+    log.get_length.return_value = 0
+    return log
 
 @pytest.fixture(name='session_id_store')
 def session_id_store_fixture():
@@ -22,9 +24,13 @@ def session_id_store_fixture():
 def pager_duty_key_store_fixture():
     return mock.Mock()
 
+@pytest.fixture(name='error_stack_feature_store')
+def error_stack_feature_store_fixture():
+    return mock.Mock()
+
 @pytest.fixture(name='webapp')
-def webapp_fixture(exception_log, session_id_store, pager_duty_key_store):
-    return create_app(exception_log, session_id_store, pager_duty_key_store)
+def webapp_fixture(exception_log, session_id_store, pager_duty_key_store, error_stack_feature_store):
+    return create_app(exception_log, session_id_store, pager_duty_key_store, error_stack_feature_store)
 
 @pytest.fixture(name='mock_session')
 def mock_session_fixture(mocker):
@@ -66,13 +72,16 @@ async def test_webapp_writes_exceptions_to_the_log(aiohttp_client, webapp, excep
     await client.post('/receive_error', data=json.dumps(exception_data))
     exception_log.write.assert_called_with(json.dumps(exception_data))
 
-async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp):
+async def test_webapp_records_exceptions_and_returns_http_200(aiohttp_client, webapp, pager_duty_key_store):
+    pager_duty_key_store.host_exists_and_key.return_value = [False, ""]
     client = await aiohttp_client(webapp)
     exception_data = {
         "message": "message",
         "url": "http://localhost",
+        "host": "localhost",
         "lineNo": 42,
         "colNo": 80,
+        "errorStack": "SomeError: Some error message",
         "error": {}
     }
     resp = await client.post('/receive_error', data=json.dumps(exception_data))

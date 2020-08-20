@@ -41,12 +41,10 @@ async function deleteSelectedRows(){
             $.ajax({
                 url: '/pager-duty-keys?keyname='+keyNameToDelete,
                 type: 'DELETE',
-            });
+            }).done(() => {showView(window.location.hash)});
+        
         }
     }
-    table.removeChild(table.getElementsByTagName("tbody")[0]);
-    table.removeChild(table.getElementsByTagName("thead")[0]);
-    generatePagerDutyKeyTable(table);
 }
 
 //TODO Make the alerts have a dismiss option
@@ -99,9 +97,9 @@ function appendNewKeyInfoRow(table, newKeyInfo){
 function submitNewKeyForm(){
     hideAlert("uniqueNameAlert");
     hideAlert("missingFormInfoAlert");
-    var keyName = document.getElementById('keyName').value;
-    var hostName = document.getElementById('hostName').value;
-    var keyValue = document.getElementById('key').value;
+    var keyName = document.getElementsByClassName("form-control")[0].value;
+    var hostName = document.getElementsByClassName("form-control")[1].value;
+    var keyValue = document.getElementsByClassName("form-control")[2].value;
 
     var table = document.getElementById("pagerDutyTable");
     const rows = table.getElementsByTagName("tr");
@@ -125,10 +123,6 @@ function submitNewKeyForm(){
         "key":keyValue
     }
     postNewKeyInfo(newKeyInfo);    
-    //TODO refactor.
-    table.removeChild(table.getElementsByTagName("tbody")[0]);
-    table.removeChild(table.getElementsByTagName("thead")[0]);
-    generatePagerDutyKeyTable(table);
-    $("#newPagerDutyKeyForm")[0].reset();   
+    showView(window.location.hash)
     return true;
 }

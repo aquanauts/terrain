@@ -12,6 +12,9 @@ class Level(Enum):
 class Alerts:
     async def send_alert(self, source, level, summary, routing_key=""):
         try:
+            logging.info(
+                "Trying to send a PagerDuty alert (%s,%s,%s)", source, level, summary,
+            )
             session = aiohttp.ClientSession()
             payload = {
                 "routing_key": routing_key,

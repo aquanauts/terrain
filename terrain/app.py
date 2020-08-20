@@ -1,3 +1,4 @@
+import sys
 import json
 import pathlib
 import asyncio
@@ -10,13 +11,15 @@ from terrain.session_id_store import SessionIDStore
 from terrain.alert import Level
 from terrain.pager_duty_key_store import PagerDutyKeyStore
 from terrain.pager_duty_key_store import obfuscate_keys
-#from classifier.tag import isTerrain
+from terrain.error_stack_feature_handler import ErrorStackFeatureStore
+#from terrain.error_stack_feature_handler import ErrorStackFeatureClassifier
 
 class Terrain:
-    def __init__(self, exception_log, session_id_store, pager_duty_key_store, alerts):
+    def __init__(self, exception_log, session_id_store, pager_duty_key_store, error_stack_feature_store, alerts):
         self.exception_log = exception_log
         self.session_id_store = session_id_store
         self.pager_duty_key_store = pager_duty_key_store
+        self.error_stack_feature_store = error_stack_feature_store
         self.alerts = alerts
 
     async def fail_route(self, _):
@@ -28,16 +31,20 @@ class Terrain:
         content = await req.content.read()
         decoded_content = content.decode()
         # validate that the content is really JSON
-        json.loads(decoded_content)
+        error_information_dict = json.loads(decoded_content)
         self.exception_log.write(decoded_content)
-        #TODO refactor
-        #if "errorStack" in content_dict:
-        #    print(content_dict["errorStack"])
-        #    error_stack = content_dict["errorStack"]
-        #else:
-        #    error_stack = ''
-        #if isTerrain(error_stack): # TODO add routing key
-        #    await self.alerts.send_alert(source="Terrain", level=Level.ERROR, summary=error_stack)
+        if "errorStack" in error_information_dict:
+            id_number = self.exception_log.get_length()
+            alert_worthy = self.error_stack_feature_store.process(error_information_dict["errorStack"], id_number)
+            print("Alertworthy?", alert_worthy)
+            if alert_worthy is True:
+                routing_key_exists, routing_key = \
+                        self.pager_duty_key_store.host_exists_and_key(error_information_dict["host"])
+                print("Key exists?", routing_key_exists)
+                if routing_key_exists is True:
+                    print("About to try alert.")
+                    await self.alerts.send_alert(source=error_information_dict["host"], level=Level.ERROR,\
+                            summary=error_information_dict["errorStack"], routing_key=routing_key)
         return web.Response(text="Attempted to append error information to the log.")
 
     async def get_error(self, req):
@@ -66,6 +73,13 @@ class Terrain:
     async def delete_pager_duty_key(self, req):
         self.pager_duty_key_store.delete_key(req.query["keyname"])
         return web.Response(text="Successfully removed a pager duty key.")
+
+    async def get_unique_new_errors(self, _):
+        new_error_info = self.error_stack_feature_store.new_category_errors()
+        return web.json_response(data=new_error_info)
+
+    async def get_repetitive_errors(self, _):
+        return web.json_response(data={})
 
     async def root_index(self, _):
         return web.FileResponse("web/index.html")
@@ -98,18 +112,25 @@ def create_exception_handler(alerts):
 
     return handle_exception
 
-def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=None):
+def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=None, error_stack_feature_store=None):
+    logging.basicConfig(
+        stream=sys.stdout, level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    logging.info("Starting Terrain!")
     if exception_log is None:
         exception_log = ExceptionLog(pathlib.Path("data/exceptions.txt"))
     if session_id_store is None:
         session_id_store = SessionIDStore()
     if pager_duty_key_store is None:
         pager_duty_key_store = PagerDutyKeyStore(pathlib.Path("data/pager_duty_key_store.txt"))
+    if error_stack_feature_store is None:
+        error_stack_feature_store = ErrorStackFeatureStore(pathlib.Path("data/error_stack_feature_store.txt"))
     app = web.Application()
     app.on_response_prepare.append(on_prepare)
     alerts = alert.Alerts()
     asyncio.ensure_future(set_exception_handler(alerts))
-    app.terrain_service = Terrain(exception_log, session_id_store, pager_duty_key_store, alerts)
+    app.terrain_service = Terrain(exception_log, session_id_store, pager_duty_key_store,\
+            error_stack_feature_store, alerts)
     app.add_routes([web.get('/', app.terrain_service.root_index),
                     web.get('/fail', app.terrain_service.fail_route),
                     web.post('/receive_error', app.terrain_service.post_error),
@@ -120,6 +141,8 @@ def create_app(exception_log=None, session_id_store=None, pager_duty_key_store=N
                     web.get('/pager-duty-keys', app.terrain_service.get_pager_duty_keys),
                     web.post('/pager-duty-keys', app.terrain_service.post_pager_duty_key),
                     web.delete('/pager-duty-keys', app.terrain_service.delete_pager_duty_key),
+                    web.get('/unique_new_errors', app.terrain_service.get_unique_new_errors),
+                    web.get('/repetitive_errors', app.terrain_service.get_repetitive_errors),
                     web.static('/', "web"), # This must be the last route
                     ])
     return app

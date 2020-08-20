@@ -3,6 +3,7 @@ import logView from './views/log.js';
 import extraInfoView from './views/extraInfo.js';
 import sessionView from './views/sessionInfo.js';
 import pagerDutyView from './views/pagerDutyView.js';
+import interestingErrorsView from './views/interestingErrorsView.js';
 
 export function routes() {
     return {
@@ -13,6 +14,7 @@ export function routes() {
         '#errorLog' : logView,
         '#extraInfo': extraInfoView,
         '#sessionID': sessionView,
-        '#pagerDutyKeys': pagerDutyView
+        '#pagerDutyKeys': pagerDutyView,
+        '#interestingErrors': interestingErrorsView
     }
 }

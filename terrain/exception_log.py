@@ -34,3 +34,6 @@ class ExceptionLog:
         if lines[-1] == "":
             return lines[0:-1]
         return lines
+
+    def get_length(self):
+        return len(self.readlines())

@@ -10,6 +10,8 @@ function activateNavbar(hash) {
     }
 }
 
+// To rebuild the curren view, call:
+// showView(window.location.hash)
 function showView(hash) {
     const hashParts = hash.split('-');
     const viewName = hashParts[0];

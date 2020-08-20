@@ -33,6 +33,15 @@ class PagerDutyKeyStore:
             return []
         return json.loads(text)
 
+    def host_exists_and_key(self, host_name):
+        all_key_dicts = self.all_keys()
+        for key_dict in all_key_dicts:
+            if (host_name in key_dict["host"]) or (key_dict["host"] in host_name):
+                stored_host_name = key_dict["host"]
+                stored_key_for_host = key_dict["key"]
+                return True, stored_key_for_host
+        return False, ""
+
     def delete_key(self, key_name):
         lines = self.all_keys()
         self._write_lines([line for line in lines if line['name'] != key_name])

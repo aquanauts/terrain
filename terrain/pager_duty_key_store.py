@@ -37,7 +37,6 @@ class PagerDutyKeyStore:
         all_key_dicts = self.all_keys()
         for key_dict in all_key_dicts:
             if (host_name in key_dict["host"]) or (key_dict["host"] in host_name):
-                stored_host_name = key_dict["host"]
                 stored_key_for_host = key_dict["key"]
                 return True, stored_key_for_host
         return False, ""
